@@ -1,0 +1,157 @@
+---
+format:   
+    pdf:    
+      include-before-body:       
+        - title.tex.txt     
+      include-in-header:        
+       text: |        
+        \usepackage{graphicx}        
+        \usepackage{fancyhdr}         
+        \usepackage{sectsty}        
+        \usepackage{titlesec}        
+        \usepackage{tocloft}        
+        \usepackage{setspace}         
+        \usepackage[style=apa]{biblatex}         
+        \addbibresource{references.bib}
+        \pagestyle{fancy}         
+        \fancyhf{}          
+        \addtokomafont{disposition}{\rmfamily}
+      keep-tex: true     
+      toc: true 
+      toc-title: "Innhold"    
+      toc-depth: 3     
+      number-sections: true   
+      number-depth: 3     
+      geometry: "left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm"     
+      fontsize: 12pt     
+      colorlinks: true    
+      bibliography: Referanser.bib     
+      bibliographystyle: apa.cls
+---
+
+## Sammendrag
+
+Her kommer tekst
+
+## Innledning
+
+Her kommer tekst
+
+```{r echo=FALSE, warning=FALSE, message=FALSE, error=FALSE, include=FALSE}
+#tømmer enviroment
+rm(list = ls())
+#Alle mulig nødvendige pakker.
+
+library(tidyverse)
+library(car)
+
+
+#setter inn for at en kan bruke norske bokstaver(særslikt maskinen denne filen er laget på)
+Sys.setlocale("LC_ALL", "en_US.UTF-8")
+
+```
+
+```{r echo=FALSE, warning=FALSE, message=FALSE, error=FALSE}
+#leser inn fila
+NSD3127 <- read_csv("Norsk medborgerpanel runde 26, 2023/NSD3127.csv")
+#ser på fila
+#View(NSD3127)
+```
+
+```{r echo=FALSE, warning=FALSE}
+#Lager datasett med de variablene vi skal bruke og kaller denne for runde_26
+
+runde_26 <- NSD3127 %>% select(r26_bgciv,
+                                    r26k2_bgurb, 
+                                    r26k2_bgchi,
+                                    r26P1,
+                                    r26P2, 
+                                    r26P3,
+                                    r26P5_1,#r26P5_2, 
+                                    r26P4_1,#r26P4_2,
+                                    #r26k2_cemes_a,r26k2_cemes_b,r26k2_cemes_c,r26k2_cemes_d,r26k2_cemes_e, r26k2_cemes_f,r26k2_cemes_g,r26k2_cemes_h,r26k2_cemes_i,
+                               r26k2_cemes_j,#r26_pccos,r26_pccop,r26_pccoo,
+                               r26k2_pcpar,r26k2_bginc,r26k2_pcwcc)
+
+#endrer videre navnene på variablene
+
+runde_26 <- runde_26 %>% rename(sivilstatus = r26_bgciv, 
+         geo_omr = r26k2_bgurb, 
+         barn = r26k2_bgchi,
+         kjønn =r26P1,
+         landsdel =r26P2, 
+         fylke =r26P3,
+         fødselsår_1 =r26P5_1,
+         #fødselsår_2 = r26P5_2, 
+         h_utd_1 = r26P4_1, 
+         #h_utd_2 = r26P4_2,
+         #tiltak_kostnadseff = r26k2_cemes_a,
+         #tiltak_støtte = r26k2_cemes_b,
+         #tiltak_ikke_skade_okonomi = r26k2_cemes_c,
+         #tiltak_arbeidspl = r26k2_cemes_d,
+         #tiltak_utslippskutt = r26k2_cemes_e, 
+         #tiltak_globalt_ansvar = r26k2_cemes_f,
+         #tiltak_teknologi_kutt = r26k2_cemes_g,
+         #tiltaket_ekspert = r26k2_cemes_h,
+         #tiltak_forskjeller = r26k2_cemes_i,
+         tiltak_norsk_natur = r26k2_cemes_j,
+         #tillit_storting = r26_pccos,
+         #tillit_politikere = r26_pccop,
+         #tillit_andre = r26_pccoo,
+         st_valg_parti = r26k2_pcpar,
+         inntekt = r26k2_bginc,
+         klimaendringer = r26k2_pcwcc)
+
+#view(runde_26)
+```
+
+```{r echo=FALSE, warning=FALSE}
+# Endrer alle verdier med 97 og 98 til NA for at ikke alle radene skal bli borte.
+
+spesifikke_verdier <- c(97, 98)
+
+# Loop gjennom kolonnene og erstatt de spesifikke verdiene med NA
+for (col in colnames(runde_26)) {
+  runde_26[[col]][runde_26[[col]] %in% spesifikke_verdier] <- NA
+}
+```
+
+```{r echo=FALSE, warning=FALSE}
+# endre dataene til gift samboer som 1 og resten som 0 i ny kolonne
+runde_26 <- runde_26 %>%
+  mutate(gift_samboer = case_when(
+    sivilstatus %in% c(1, 2, 5, 6, 7) ~ 0,
+    TRUE ~ 1
+  ))
+```
+
+```{r echo=FALSE, warning=FALSE}
+# endre dataene til har barn og har ikke barn i ny kolonne, 0 for ikke barn og 1 for barn
+runde_26 <- runde_26 %>%
+  mutate(har_barn_hjemme = case_when(
+    barn %in% c(0) ~ 0,
+    TRUE ~ 1
+  ))
+
+```
+
+```         
+```
+
+## Teori
+
+## Metode og datagrunnlag
+
+## Deskriptiv statistikk
+
+## Episriske resultater
+
+## Resultat
+
+## Grafisk analyse
+
+## Diskusjon
+
+## Begrensninger ved analysen
+
+## Referanser
