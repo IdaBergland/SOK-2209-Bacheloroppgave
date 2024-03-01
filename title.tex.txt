@@ -1,0 +1,22 @@
+% title.tex
+
+% for å klare plassere logoen der den skal være må marginene settes til null
+\newgeometry{left=0cm, right=0cm, top=0cm, bottom=0cm}
+\vspace*{0.5cm} % avstand fra toppen av siden
+\hspace*{1.5cm}\includegraphics[width=10cm]{bilder/logo_uit.png} %avstand fra venstre side, og størrelse på logo.
+
+% tekst + bildet under som tar hele resten av førstesiden
+\begin{flushleft}
+    \vspace*{0.5cm}
+    \hspace*{2.5cm}{\color{black}\fontsize{11}{13.2}\selectfont Fakultet for biovitenskap, fiskeri og økonomi \\[0.5em]
+    \hspace*{2.5cm}\large{\color{black}\textbf{Tiltak Natur}}  \\[0.5em]
+    \hspace*{2.5cm}\color{black}\fontsize{12}{14.4}\selectfont hva er forskjell \\[0.5em]
+    \hspace*{2.5cm}\color{black}\fontsize{11}{13.2}\selectfont Kandidatnummer:Ida og Oddmund  \\[0.5em]
+    \hspace*{2.5cm}\color{black}\fontsize{11}{13.2}\selectfont Sok-2209, Vår 2024 \\[0.5em]
+    \hspace*{2.0cm}
+    \hspace*{-2.5cm}\includegraphics[width=\dimexpr\paperwidth+2.5cm]{bilder/bilde_uit.png} \par}
+\end{flushleft} 
+
+% setter marginene tilbake slik at "Table of contents" (toc) og annen tekst er der de skal være
+\newgeometry{left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm}
+\setstretch{1.5}
