@@ -9,9 +9,9 @@
 \begin{flushleft}
     \vspace*{0.5cm}
     \hspace*{2.5cm}{\color{black}\fontsize{11}{13.2}\selectfont Fakultet for biovitenskap, fiskeri og økonomi \\[0.5em]
-    \hspace*{2.5cm}\large{\color{black}\textbf{Tiltak Natur}}  \\[0.5em]
-    \hspace*{2.5cm}\color{black}\fontsize{12}{14.4}\selectfont hva er forskjell \\[0.5em]
-    \hspace*{2.5cm}\color{black}\fontsize{11}{13.2}\selectfont Kandidatnummer:Ida og Oddmund  \\[0.5em]
+    \hspace*{2.5cm}\large{\color{black}\textbf{Holdninger til klimagasstiltak}}  \\[0.5em]
+    \hspace*{2.5cm}\color{black}\fontsize{12}{14.4}\selectfont Har inntekten en innvirkning på holdningen til tiltak som påvirker naturen? \\[0.5em]
+    \hspace*{2.5cm}\color{black}\fontsize{11}{13.2}\selectfont Kandidatnummer:Ida og Oddmund 39 \\[0.5em]
     \hspace*{2.5cm}\color{black}\fontsize{11}{13.2}\selectfont Sok-2209, Vår 2024 \\[0.5em]
     \hspace*{2.0cm}
     \hspace*{-2.5cm}\includegraphics[width=\dimexpr\paperwidth+2.5cm]{bilder/bilde_uit.png} \par}

@@ -25,9 +25,11 @@ format:
       geometry: "left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm"     
       fontsize: 12pt     
       colorlinks: true    
-      bibliography: Referanser.bib     
+      bibliography: bachelor.bib     
       bibliographystyle: apa.cls
 ---
+
+## Forord
 
 ## Sammendrag
 
@@ -35,7 +37,19 @@ Her kommer tekst
 
 ## Innledning
 
-Her kommer tekst
+Ta inn fra prosjektbeskrivelsen?
+
+Kan bruke noe fra klimameldingen i innledning, eventuelt andre plasser.\[\@miljødepartementet2021\]
+
+Kan dette brukes?
+
+Det er noen undersøkelser som konkluderer med at hensynet til klima og miljø blir viktigere jo høyere inntekt folk har. Dette kan ha sammenheng med at man kan kjøpe mer miljøvennlige varer som ofte koster mer enn vanlig. Det kan også ha sammenheng med at høyere inntekt ofte betyr høyere utdanning som burde tilsi mer kunnskap om sammenhengen mellom levemåte og klimaendringer.
+
+Politiske holdinger kan også spille en rolle. Det er ikke uvanlig at man observerer at den politiske høyresiden er mindre opptatt av klimaendringer og konsekvenser av dette. Det er også her vi finner de aller fleste som fornekter at klimaendringene er menneskeskapte.
+
+Det er også undersøkelser som konkluderer med det motsatte. Med økende inntekt faller interesser for å ta miljøhensyn. Dette er forklart med at jo høyere inntekt man har, jo større mulighet er det for å kjøpe seg fri fra konsekvensene av klimaendringene. Har man lite , er man skeptisk til å sette seg i en situasjon der det lille man har kan mistes. Har man mye, kan man flytte hvis problemene blir påfallende, eller forsikre seg mot eventuelle skadevirkninger.\[\@nauges_relationship_2021\]
+
+De fleste analyser omfatter BNP per capita for ulike land og hvordan de scorer på en skala for klimatiltakforståelse
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE, error=FALSE, include=FALSE}
 #tømmer enviroment
@@ -72,7 +86,8 @@ runde_26 <- NSD3127 %>% select(r26_bgciv,
                                     r26P4_1,#r26P4_2,
                                     #r26k2_cemes_a,r26k2_cemes_b,r26k2_cemes_c,r26k2_cemes_d,r26k2_cemes_e, r26k2_cemes_f,r26k2_cemes_g,r26k2_cemes_h,r26k2_cemes_i,
                                r26k2_cemes_j,#r26_pccos,r26_pccop,r26_pccoo,
-                               r26k2_pcpar,r26k2_bginc,r26k2_pcwcc)
+                               r26k2_pcpar,r26k2_bginc,r26k2_pcwcc,
+                               r26k2_bglrs)
 
 #endrer videre navnene på variablene
 
@@ -101,7 +116,8 @@ runde_26 <- runde_26 %>% rename(sivilstatus = r26_bgciv,
          #tillit_andre = r26_pccoo,
          st_valg_parti = r26k2_pcpar,
          inntekt = r26k2_bginc,
-         klimaendringer = r26k2_pcwcc)
+         klimaendringer = r26k2_pcwcc,
+         pol_holdning = r26k2_bglrs)
 
 #view(runde_26)
 ```
@@ -124,6 +140,13 @@ runde_26 <- runde_26 %>%
     sivilstatus %in% c(1, 2, 5, 6, 7) ~ 0,
     TRUE ~ 1
   ))
+```
+
+```{r}
+# endre for kjønn
+# Kjønnsdummy (1 for mann, 0 for kvinne)
+runde_26$mann <- ifelse(runde_26$kjønn == 1, 1, 0)
+
 ```
 
 ```{r echo=FALSE, warning=FALSE}
@@ -150,7 +173,7 @@ count <- count(runde_26_clean, klimaendringer)
 ggplot(count, aes(x = klimaendringer, y = n)) +
   geom_bar(stat = "identity", fill = "aquamarine2") +
   labs(title = "Hvor bekymret er du for 'klimaendringer'?",
-       subtitle = "Antall forkomster med svar fra medborgerpanelet runde 26",
+       subtitle = "Antall forekomster med svar fra medborgerpanelet runde 26",
        x = "Bekymringsnivå",
        y = "Antall",
        caption = "Bekymringsnivå: 1 = Ikke bekymret, 5 = Veldig bekymret") +
@@ -163,7 +186,7 @@ ggplot(count, aes(x = klimaendringer, y = n)) +
 
 ```
 
-```{r}
+```{r echo=FALSE, warning=FALSE, message=FALSE, error=FALSE}
 
 #nå skal vi lage alle faktorene man eventuelt blir å trenge
 
@@ -195,13 +218,188 @@ data1 <- runde_26 %>%
   mutate(inntekter = fct_relevel(inntekter, "Mindre enn 150 000"))
 ```
 
+```{r}
+
+runde_26p <- data1 %>%
+  group_by(inntekter) %>%
+  mutate(tiltak_norsk_natur_mean = mean(tiltak_norsk_natur, na.rm = TRUE))
+
+data2 <- runde_26p[complete.cases(runde_26p$tiltak_norsk_natur), ]
+
+
+
+reg1 <- lm(tiltak_norsk_natur ~ inntekter, data = data2)
+
+summary(reg1)
+```
+
+```{r}
+
+reg2 <- lm(tiltak_norsk_natur_mean ~ inntekter, data = data2)
+
+summary(reg2)
+
+
+count2 <- count(runde_26p, tiltak_norsk_natur)
+
+# Lager derretter et stolpediagram med forklaring på hva verdiene betyr
+ggplot(count2, aes(x = tiltak_norsk_natur, y = n)) +
+  geom_bar(stat = "identity", fill = "aquamarine2") +
+  labs(title = "Antall forkomster i norsk natur?",
+       subtitle = "Antall forekomster med svar fra medborgerpanelet runde 26",
+       x = "Bekymringsnivå",
+       y = "Antall")+
+  theme_minimal()  # Minimalt tema
+
+
+ggplot(data2, aes(x = inntekter, y = tiltak_norsk_natur_mean)) +
+  geom_point() +
+  labs(x = "Inntekt", y = "Natur") +
+  theme_minimal()
+```
+
+```{r}
+
+reg3 <- lm(tiltak_norsk_natur_mean ~ inntekter, utdanning , data = data2)
+
+summary(reg3)
+```
+
 ## Teori
+
+# Modell
+
+## Om modellen
+
+Vi vil nå gjennomgå en modell som tar for seg forholdet mellom inntekt og miljølhensyn. Denne kalles Miljø-Kuznets-kurve og går i korte trekk ut på at forholdet mellom forurensning og inntekt i et land(BNP per cap) kan beskrives som en omvendt U-formet kurve. Med den økonomiske utviklingen i et land følger i begynnelsen økende forurensningsproblemer inntil et visst punkt. Etter det, vil deler av produksjonen også omfatte forurensningsreduserende produksjon og eksisterende produksjon blir mer miljøvennlig. Dette vil føre til at forurensingen reduseres. Forklaringene på dette er blant annet overgang fra et agarsamfunn til industriell produksjon og videre til mer miljøvennlig service- og tjenesteproduksjon. Et annet element i forklaringene er at med økende inntekt vil menneskene ha høyere preferanser for økte miljøstandarder. [@dinda2004]
+
+Det er også verdt å merke seg at økende verdenshandel har medført at miljøfiendtlig produksjon blir flyttet fra land med strenge miljøreguleringer til utviklingsland med mindre vektlegging på miljøkonsekvenser. Dette kan også være et bidrag til at forurensning er avtakende i høyt industrialiserte land. Dette er kalt "Polution Haven Hypotesis" (PHH). [@dinda2004, 437]
+
+## Miljø-Kuznetskurven
+
+Vi vil nå gjennomgå en enkel modell for forholdet mellom forurensning og inntekt. Framstillingen er basert på artikkelen til [@andreoni2001]
+
+### Antakelser
+
+Vi antar først at vi har en økonomi som består av en person. Vi antar videre at denne personen har nytte av å konsumere ett privat gode , C, og av forurensing P. Nyttefunksjonen kan da skrives som:
+
+$$
+U=U(C,P)
+$$ {#eq-nyttefunksjon} der $\frac{\partial U}{\partial C}>0$ og $\frac{\partial U}{\partial P}<0$, og $U$ er kvasikonkav i $C$ og $-P$.
+
+Vi antar at forurensing er forårsaket av konsumet og at vår person har mulighet til å gjøre noe med det enten ved å rydde opp eller ved å la være å forurense. Denne muligheten(miljøinnsatsen) kaller vi $E$. Forurensing $P$ er da en positiv funksjon av konsum $C$ og en negativ funksjon av miljøinnsatsen $E$.
+
+$$
+P=P(C,E)
+$$ {#eq-forurensning} der $\frac{\partial P}{\partial C}>0$ og $\frac{\partial P}{\partial E}<0$
+
+Vi antar til slutt at en begrenset beholdning av ressurser,$M$, kan brukes på $C$ og $E$. For å gjøre det enkelt normaliserer vi de relative kostnadene til $C$ og $E$ til 1 slik at ressursbetingelsen blir: $$C+E=M$$ {#eq-ressursbet}
+
+## Utledning av modellen
+
+La oss ta eksemplet der $U=U(C,P)$ har følgende form:
+
+$$U=C-zP
+$$ {#eq-nyttefunksjon_1_eks}
+
+Nytten i @eq-nyttefunksjon_1_eks er lineær og additiv i $C$ og $P$, og $z$ er den konstante ulempen av forurensning.
+
+Forurensning $P$ i @eq-forurensning_1_eks har to ledd. $$P=C-C^\alpha E^\beta 
+$$ {#eq-forurensning_1_eks}
+
+$C$ er brutto forurensning før utslippsreduksjoner og er direkte proposjonal med konsum. Den andre faktoren i uttrykket , $C^\alpha E^\beta$ , representerer utslippsreduksjon. Den sier for det første at konsum medfører forurensning, men at ressurser brukt på miljøinnsats reduserer denne forurensningen med en standard konkav produktfunksjon.
+
+Dette gir oss da at:
+
+$$U(C,E)=C-z(C-C^\alpha E^\beta)$$ {#eq-nyttefunksjon_2_eks}
+
+### Den konstante ulempen av forurensning er lik 1($z=1$)
+
+La oss anta at $z=1$.
+
+Vi står da igjen med en standard Cobb-Douglas nyttefunksjon som vi maksimerer under ressursbetingelsen $C+E=M$.
+
+Dette er maksimeringsproblemet:
+
+$$ maksimer_{C,E} \;\; U(C,E) = C^\alpha E^\beta \;\; gitt\;\; M=C+E$$ {#eq-max}
+
+Vi setter opp Lagrange-funksjonen: $$L = U(C,E)-\lambda (C+E-M)$$ {#eq-Lagrange} og deriverer $L$ med hensyn på $C,E,\lambda$:
+
+$$\frac{\partial L}{\partial C} =  \alpha C^{\alpha-1} E^\beta -\lambda = 0 $$ {#eq-Lagrange_1}
+
+$$\frac{\partial L}{\partial E} =  \beta C^\alpha E^{\beta-1} -\lambda = 0 $$ {#eq-Lagrange_2}
+
+$$\frac{\partial L}{\partial \lambda} = C+E=M $$ {#eq-Lagrange_3}
+
+Vi kan sette @eq-Lagrange_1 lik @eq-Lagrange_2 som da blir:
+
+$$ \alpha C^{\alpha-1} E^\beta = \beta C^\alpha E^{\beta-1}$$ {#eq-lagrange_4}
+
+$$ \frac{\alpha C^{\alpha-1} E^\beta} {\beta C^\alpha E^{\beta-1}}=1$$ {#eq-lagrange_5}
+
+$$ \frac{\alpha C^{\alpha-\alpha-1} E^{\beta-\beta+1}} {\beta} = \frac{\alpha}{\beta} C^{-1} E= \frac{\alpha E}{\beta C} = 1$$ {#eq-lagrange_6}
+
+Løser for E: $$E=\frac{\beta C}{\alpha}$$ {#eq-sol_E}
+
+Setter dette inn i @eq-ressursbet: $$M=C+E = C + \frac{\beta C}{\alpha}$$
+
+Løser for $C$ som gir likevektsløsning $C^*$:**(Her treng vi hjelp til utregning!!!!!)**
+
+$$ C^*= \frac{\alpha}{\alpha+\beta} M$$ {#eq-sol_C_opt}
+
+Setter dette inn i @eq-lagrange_6 som gir likevektsløsning $E^*$:
+
+$$ E^*= \frac{\beta}{\alpha+\beta} M$$ {#eq-sol_E_opt}
+
+Vi setter disse inn i @eq-forurensning_1_eks og får den optimale mengde forurensning:
+
+$$ P^*(M)= \frac{\alpha}{\alpha+\beta} M- (\frac{\alpha}{\alpha+\beta})^\alpha (\frac{\beta}{\alpha+\beta})^\beta M^{\alpha+\beta}$$ {#eq-sol_P}
+
+Den deriverte av dette uttrykket angir stigningstallet til miljø-Kuznetskurven. $$ \frac{\partial P^*}{\partial M} = \frac{\alpha}{\alpha+\beta} -(\alpha+\beta) (\frac{\alpha}{\alpha+\beta})^\alpha (\frac{\beta}{\alpha+\beta})^\beta M^{\alpha+\beta-1}$$ {#eq-sol_P_1-derivert}
+
+### Utfall avhengig av $\alpha$ og $\beta$
+
+Det er verdien på $\alpha$ og $\beta$ som avgjør hvorvidt kurven er stigende eller fallende. La oss se nærmere på dette:
+
+-   Hvis $\alpha+\beta = 1$ vil tiltak mot forurensning ha konstant skalautbytte og $\frac{\partial P^*}{\partial M}$ vil være konstant. Hvis $0 \leq \alpha$ og $\beta \leq 1$ vil $P^*$ øke med M, og det vil ikke være noen del av forurensning-inntekt kurven som er fallende.
+
+-   Hvis $\alpha+\beta \neq1$ kan vi se nærmere på den andrederiverte til @eq-sol_P_1-derivert: $$ \frac{\partial^2 P^*}{\partial M^2} =-(\alpha+\beta-1)(\alpha+\beta) (\frac{\alpha}{\alpha+\beta})^\alpha (\frac{\beta}{\alpha+\beta})^\beta M^{\alpha+\beta-2}$$ {#eq-sol_P_2-derivert}
+
+-   Hvis $\alpha+\beta < 1$ vil tiltak mot forurensning ha avtakende skalautbytte, og $P^*(M)$ vil være konveks.
+
+-   Hvis $\alpha+\beta > 1$ vil tiltak mot forurensning ha økende skalautbytte, og $P^*(M)$ vil være konkav. Det er denne kurven som blir omtalt som miljø-Kuznets kurven.
+
+**Her skal det inn tre figurer, en for hvert av tilfellene**
+
+### Den konstante ulempen av forurensning er ulik 1($z \neq 1$)
+
+Dette vil ikke rokke ved det sentrale resultatet, dvs, at forurensning-inntekt kurven har omvendt U-form hvis og bare hvis $\alpha+\beta>1$.
+
+(Må utledes) Ved å løse for førsteordens betingelsen og ordne uttrykket får vi at:
+
+$$C^*= \frac{\alpha}{\alpha+\beta}M+\frac {1-z}{z(\alpha+\beta)C^{\alpha-1} (M-C)^{\beta-1}}=\frac{\alpha}{\alpha+\beta}M+B\frac {1-z}{z} $$ {#eq-sol_C_opt_2}
+
+der $B=\frac{1}{(\alpha+\beta)C^{\alpha-1} (M-C)^{\beta-1}}>0$
+
+Hvis $z<1$ vil $C^*$ være større enn i @eq-sol_C_opt og forurensingen vil være tilsvarende større på hver inntektsnivå. Hvis $z>1$ vil man ha større ubehag av forurensning, og da vil $C^*$ og $P^*$ være mindre. Selv om de absolutte verdiene av $C^*$ og $P^*$ vil endres som følge av endring i $z$, vil dette ikke ha konsekvenser for formen på forurensning-inntekt kurven.
+
+### Vurderinger av modellen - relevans for vår problemstilling
+
+$$ Holdningentiltiltak som ikke skader norsk natur = $\alpha_1$\$r26_pccos\$(tillit-Storting) + $\alpha_2$$r26_pccop\$(tillit-politikere) + $\alpha_3$$r26_pccoo$(tillit-andre) + $\alpha_4$kjønn + $\alpha_5$*alder +* $\alpha_6$'geografi + $\alpha_7$utdanning + $\epsilon_i$ \$\${#eq-reg_gen}
+
+\newpage
 
 ## Metode og datagrunnlag
 
+Dette er regresjonsligningen vi tenker å bruke. I utgangspunktet vil vi se på forholdet mellom inntekt og holdning til tiltak som ikke skader norsk natur for deretter å legge til variabler for å se på om dette har noen innvirkning.
+
+Holdning til tiltak som ikke skader norsk natur = \$ \alpha\_1inntekt + \alpha\_2kjønn + \alpha\_3alder + \alpha\_4utdanning + \alpha\_5geografi + \alpha\_6 pol_holdning + \epsilon\$
+
+Her kommer en tabell med oversikt over variablene og dens grenser.
+
 ## Deskriptiv statistikk
 
-## Episriske resultater
+## Empiriske resultater
 
 ## Resultat
 
