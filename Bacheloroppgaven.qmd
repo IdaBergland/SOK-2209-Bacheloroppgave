@@ -75,25 +75,40 @@ NSD3127 <- read_csv("Norsk medborgerpanel runde 26, 2023/NSD3127.csv")
 ```{r echo=FALSE, warning=FALSE}
 #Lager datasett med de variablene vi skal bruke og kaller denne for runde_26
 
-runde_26 <- NSD3127 %>% select(r26_bgciv,
-                                    r26k2_bgurb, 
-                                    r26k2_bgchi,
-                                    r26P1,
-                                    r26P2, 
-                                    r26P3,
-                                    #r26P5_1,
-                               r26P5_2, 
-                                    r26P4_1,#r26P4_2,
-                                    #r26k2_cemes_a,r26k2_cemes_b,r26k2_cemes_c,r26k2_cemes_d,r26k2_cemes_e, r26k2_cemes_f,r26k2_cemes_g,r26k2_cemes_h,r26k2_cemes_i,
-                               r26k2_cemes_j,#r26_pccos,r26_pccop,r26_pccoo,
-                               r26k2_pcpar,r26k2_bginc,r26k2_pcwcc,
-                               r26k2_bglrs)
+runde_26 <- NSD3127 %>% select(#r26_bgciv,
+                              r26k2_bgurb, 
+                              #r26k2_bgchi,
+                              r26P1,
+                              r26P2, 
+                              r26P3,
+                              #r26P5_1,
+                              r26P5_2, 
+                              r26P4_1,
+                              #r26P4_2,
+                              #r26k2_cemes_a,
+                              #r26k2_cemes_b,
+                              #r26k2_cemes_c,
+                              #r26k2_cemes_d,
+                              r26k2_cemes_e,
+                              # r26k2_cemes_f,
+                              r26k2_cemes_g,
+                              #r26k2_cemes_h,
+                              #r26k2_cemes_i,
+                              r26k2_cemes_j,
+                              #r26_pccos,
+                              #r26_pccop,
+                              #r26_pccoo,
+                              #r26k2_pcpar,
+                              r26k2_bginc,
+                              r26k2_pcwcc,
+                              r26k2_bglrs,
+                              r26_bgday)
 
 #endrer videre navnene på variablene
 
-runde_26 <- runde_26 %>% rename(sivilstatus = r26_bgciv, 
+runde_26 <- runde_26 %>% rename(#sivilstatus = r26_bgciv, 
          geo_omr = r26k2_bgurb, 
-         barn = r26k2_bgchi,
+         #barn = r26k2_bgchi,
          kjønn =r26P1,
          landsdel =r26P2, 
          fylke =r26P3,
@@ -105,16 +120,16 @@ runde_26 <- runde_26 %>% rename(sivilstatus = r26_bgciv,
          #tiltak_støtte = r26k2_cemes_b,
          #tiltak_ikke_skade_okonomi = r26k2_cemes_c,
          #tiltak_arbeidspl = r26k2_cemes_d,
-         #tiltak_utslippskutt = r26k2_cemes_e, 
+         tiltak_utslippskutt = r26k2_cemes_e, 
          #tiltak_globalt_ansvar = r26k2_cemes_f,
-         #tiltak_teknologi_kutt = r26k2_cemes_g,
+         tiltak_teknologi_kutt = r26k2_cemes_g,
          #tiltaket_ekspert = r26k2_cemes_h,
          #tiltak_forskjeller = r26k2_cemes_i,
-         tiltak_norsk_natur = r26k2_cemes_j,
+         #tiltak_norsk_natur = r26k2_cemes_j,
          #tillit_storting = r26_pccos,
          #tillit_politikere = r26_pccop,
          #tillit_andre = r26_pccoo,
-         st_valg_parti = r26k2_pcpar,
+         #st_valg_parti = r26k2_pcpar,
          inntekt = r26k2_bginc,
          klimaendringer = r26k2_pcwcc,
          pol_holdning = r26k2_bglrs)
@@ -131,35 +146,17 @@ spesifikke_verdier <- c(97, 98)
 for (col in colnames(runde_26)) {
   runde_26[[col]][runde_26[[col]] %in% spesifikke_verdier] <- NA
 }
-```
 
-```{r echo=FALSE, warning=FALSE}
-# endre dataene til gift samboer som 1 og resten som 0 i ny kolonne
-runde_26 <- runde_26 %>%
-  mutate(gift_samboer = case_when(
-    sivilstatus %in% c(1, 2, 5, 6, 7) ~ 0,
-    TRUE ~ 1
-  ))
-```
+#rydde data og fjerne alle som ikke har verdi i tiltak-utslippskutt
+data2 <- data1[complete.cases(data1$tiltak_utslippskutt), ]
 
-```{r}
-# endre for kjønn
-# Kjønnsdummy (1 for mann, 0 for kvinne)
-runde_26$mann <- ifelse(runde_26$kjønn == 1, 1, 0)
-
-```
-
-```{r echo=FALSE, warning=FALSE}
-# endre dataene til har barn og har ikke barn i ny kolonne, 0 for ikke barn og 1 for barn
-runde_26 <- runde_26 %>%
-  mutate(har_barn_hjemme = case_when(
-    barn %in% c(0) ~ 0,
-    TRUE ~ 1
-  ))
+#så fjerne alle som har inntekt under 150 000
+data2 <- data2[complete.cases(data2$inntekt) & data2$inntekt != 1, ]
 
 ```
 
 ```{r echo=FALSE, fig.width=6, fig.height=4}
+
 #lage introfiguren med hvor bekymret er du for klimaendringer hvor
 #man teller opp hvor mange man har av hvert svar
 
@@ -187,6 +184,11 @@ ggplot(count, aes(x = klimaendringer, y = n)) +
 ```
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE, error=FALSE}
+# her lager vi om til alle faktorer og dummyvariabler 
+
+# endre for kjønn
+# Kjønnsdummy (1 for mann, 0 for kvinne)
+runde_26$mann <- ifelse(runde_26$kjønn == 1, 1, 0)
 
 #nå skal vi lage alle faktorene man eventuelt blir å trenge
 
@@ -197,17 +199,13 @@ data1 <- runde_26 %>%
     TRUE ~ '1990_og_etter'
   )) %>%
   mutate(født = factor(født, levels = c('1959_og_før', '1960_1989', '1990_og_etter'))) %>%
-  mutate(gift_samboer = case_when(
-    sivilstatus %in% c(1, 2, 5, 6, 7) ~ 0,
-    TRUE ~ 1
-  )) %>%
    mutate(utdanning = factor(h_utd_1, 
                             levels = c(1, 2, 3),
                             labels = c("grunnskole", "videregående", "høyere"))) %>%
-  mutate(utdanning = fct_relevel(utdanning, "høyere")) %>%
+  mutate(utdanning = fct_relevel(utdanning, "grunnskole")) %>%
   mutate(inntekter = factor(inntekt, 
-                            levels = c(1, 2, 3, 4 ,5 ,6 ,7 ,8),
-                            labels = c("Mindre enn 150 000",
+                            levels = c(2, 3, 4 ,5 ,6 ,7 ,8),
+                            labels = c(
                                        "150 001 - 300 000",
                                        "300 001 - 400 000",
                                        "400 001 - 500 000",
@@ -215,52 +213,12 @@ data1 <- runde_26 %>%
                                        "600 001 - 700 000",
                                        "700 001 - 1 000 000",
                                        "Mer enn 1 000 000"))) %>%
-  mutate(inntekter = fct_relevel(inntekter, "Mindre enn 150 000"))
+  mutate(inntekter = fct_relevel(inntekter, "150 001 - 300 000"))
 ```
 
 ```{r}
-
-runde_26p <- data1 %>%
-  group_by(inntekter) %>%
-  mutate(tiltak_norsk_natur_mean = mean(tiltak_norsk_natur, na.rm = TRUE))
-
-data2 <- runde_26p[complete.cases(runde_26p$tiltak_norsk_natur), ]
-
-
-
-reg1 <- lm(tiltak_norsk_natur ~ inntekter, data = data2)
-
-summary(reg1)
-```
-
-```{r}
-
-reg2 <- lm(tiltak_norsk_natur_mean ~ inntekter, data = data2)
-
-summary(reg2)
-
-
-count2 <- count(runde_26p, tiltak_norsk_natur)
-
-# Lager derretter et stolpediagram med forklaring på hva verdiene betyr
-ggplot(count2, aes(x = tiltak_norsk_natur, y = n)) +
-  geom_bar(stat = "identity", fill = "aquamarine2") +
-  labs(title = "Antall forkomster i norsk natur?",
-       subtitle = "Antall forekomster med svar fra medborgerpanelet runde 26",
-       x = "Bekymringsnivå",
-       y = "Antall")+
-  theme_minimal()  # Minimalt tema
-
-
-ggplot(data2, aes(x = inntekter, y = tiltak_norsk_natur_mean)) +
-  geom_point() +
-  labs(x = "Inntekt", y = "Natur") +
-  theme_minimal()
-```
-
-```{r}
-
-reg3 <- lm(tiltak_norsk_natur_mean ~ inntekter, utdanning , data = data2)
+#leker oss med å se om reg fungerer
+reg3 <- lm(tiltak_utslippskutt ~ inntekter + utdanning, data = data2)
 
 summary(reg3)
 ```
@@ -343,7 +301,11 @@ Løser for E: $$E=\frac{\beta C}{\alpha}$$ {#eq-sol_E}
 
 Setter dette inn i @eq-ressursbet: $$M=C+E = C + \frac{\beta C}{\alpha}$$
 
-Løser for $C$ som gir likevektsløsning $C^*$:**(Her treng vi hjelp til utregning!!!!!)**
+Løser for $C$: $\frac {M}{1+\frac{\beta}{\alpha}}=C \frac{(1+\frac{\beta}{\alpha})}{1+\frac{\beta}{\alpha}}$
+
+$C= \frac {M}{1+\frac{\beta}{\alpha}}= (\frac {M}{1+\frac{\beta}{\alpha}})*\frac{a}{a}$
+
+som gir likevektsløsning $C^*$:
 
 $$ C^*= \frac{\alpha}{\alpha+\beta} M$$ {#eq-sol_C_opt}
 
@@ -385,8 +347,6 @@ Hvis $z<1$ vil $C^*$ være større enn i @eq-sol_C_opt og forurensingen vil vær
 
 ### Vurderinger av modellen - relevans for vår problemstilling
 
-$$ Holdningentiltiltak som ikke skader norsk natur = $\alpha_1$\$r26_pccos\$(tillit-Storting) + $\alpha_2$$r26_pccop\$(tillit-politikere) + $\alpha_3$$r26_pccoo$(tillit-andre) + $\alpha_4$kjønn + $\alpha_5$*alder +* $\alpha_6$'geografi + $\alpha_7$utdanning + $\epsilon_i$ \$\${#eq-reg_gen}
-
 \newpage
 
 ## Metode og datagrunnlag
@@ -410,3 +370,16 @@ Her kommer en tabell med oversikt over variablene og dens grenser.
 ## Begrensninger ved analysen
 
 ## Referanser
+
+```{r}
+count_datainntekt <- count(data2, inntekt)
+
+# Lag et stolpediagram
+ggplot(count_datainntekt, aes(x = inntekt, y = n)) +
+  geom_bar(stat = "identity", fill = "purple") +
+  geom_text(aes(label = n), vjust = -0.5, size = 3.5) + 
+  labs(title = "Antall forekomster av hver verdi i kolonnen 'inntekt'",
+       x = "Verdi",
+       y = "Antall") +
+  theme_minimal()
+```
