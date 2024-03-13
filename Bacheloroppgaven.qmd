@@ -101,8 +101,7 @@ runde_26 <- NSD3127 %>% select(#r26_bgciv,
                               #r26k2_pcpar,
                               r26k2_bginc,
                               r26k2_pcwcc,
-                              r26k2_bglrs,
-                              r26_bgday)
+                              r26k2_bglrs)
 
 #endrer videre navnene på variablene
 
@@ -148,10 +147,10 @@ for (col in colnames(runde_26)) {
 }
 
 #rydde data og fjerne alle som ikke har verdi i tiltak-utslippskutt
-data2 <- data1[complete.cases(data1$tiltak_utslippskutt), ]
+data1 <- runde_26[complete.cases(runde_26$tiltak_utslippskutt), ]
 
 #så fjerne alle som har inntekt under 150 000
-data2 <- data2[complete.cases(data2$inntekt) & data2$inntekt != 1, ]
+data2 <- data1[complete.cases(data1$inntekt) & data1$inntekt != 1, ]
 
 ```
 
@@ -188,11 +187,11 @@ ggplot(count, aes(x = klimaendringer, y = n)) +
 
 # endre for kjønn
 # Kjønnsdummy (1 for mann, 0 for kvinne)
-runde_26$mann <- ifelse(runde_26$kjønn == 1, 1, 0)
+data2$mann <- ifelse(data2$kjønn == 1, 1, 0)
 
 #nå skal vi lage alle faktorene man eventuelt blir å trenge
 
-data1 <- runde_26 %>%
+data2 <- data2 %>%
   mutate(født = case_when(
     fødselsår_2 == 1 ~ '1959_og_før',
     fødselsår_2 == 2 ~ '1960_1989',
