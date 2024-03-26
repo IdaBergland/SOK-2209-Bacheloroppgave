@@ -2,7 +2,11 @@
 format:   
     pdf:    
       include-before-body:       
-        - title.tex.txt     
+        - title.tex.txt 
+        - \usepackage{fancyhdr}
+        - \pagestyle{fancy}
+        - \fancyhf{}
+        - \fancyfoot[C]{\thepage} 
       include-in-header:        
        text: |        
         \usepackage{graphicx}        
@@ -12,9 +16,8 @@ format:
         \usepackage{tocloft}        
         \usepackage{setspace}         
         \usepackage[style=apa]{biblatex}         
-        \addbibresource{references.bib}
-        \pagestyle{fancy}         
-        \fancyhf{}          
+        \addbibresource{bachelor.bib}
+        \pagestyle{fancy} 
         \addtokomafont{disposition}{\rmfamily}
       keep-tex: true     
       toc: true 
@@ -31,11 +34,13 @@ format:
 
 ## Forord
 
-## Sammendrag
+\newpage
+
+# Sammendrag
 
 Her kommer tekst
 
-## Innledning
+# Innledning
 
 Ta inn fra prosjektbeskrivelsen?
 
@@ -154,7 +159,7 @@ data2 <- data1[complete.cases(data1$inntekt) & data1$inntekt != 1, ]
 
 ```
 
-```{r echo=FALSE, fig.width=6, fig.height=4}
+```{r echo=FALSE, fig.width=4, fig.height=2}
 
 #lage introfiguren med hvor bekymret er du for klimaendringer hvor
 #man teller opp hvor mange man har av hvert svar
@@ -204,8 +209,7 @@ data2 <- data2 %>%
   mutate(utdanning = fct_relevel(utdanning, "grunnskole")) %>%
   mutate(inntekter = factor(inntekt, 
                             levels = c(2, 3, 4 ,5 ,6 ,7 ,8),
-                            labels = c(
-                                       "150 001 - 300 000",
+                            labels = c("150 001 - 300 000",
                                        "300 001 - 400 000",
                                        "400 001 - 500 000",
                                        "500 001 - 600 000",
@@ -221,8 +225,6 @@ reg3 <- lm(tiltak_utslippskutt ~ inntekter + utdanning, data = data2)
 
 summary(reg3)
 ```
-
-## Teori
 
 # Modell
 
@@ -348,11 +350,13 @@ Hvis $z<1$ vil $C^*$ være større enn i @eq-sol_C_opt og forurensingen vil vær
 
 \newpage
 
-## Metode og datagrunnlag
+# Metode og datagrunnlag
+
+I dette kapitlet skal vi gå gjennom metoden og datagrunnlaget som ligger i grunn for å gjøre vår analyse av forholdet mellom inntekt og holdninger til miljøtiltak. Det å forstå metoden er viktig for å kunne tolke resultatene på en meningsfull måte. Først introduserer vi regresjonsmodellen som vi skal anvende for undersøkelsen på hvordan ulike sosionomiske og demografiske faktorer påvirker individets miljøholdning, før en detajert beskrivelse av variablene vi har valgt til modellen, #inkludert deres operassjonalisering og forventede innflytelse på den avhengige variablen#. Videre vil vi dirkutere kilden til datagrunnlaget, representativiteten og de eventuelle begrensninger som kan påvirke analysen. Til sist vil vi redgjøre for de statistiske metodene som vi vil bruke for å sikre at funnene er robuste og pålitelige.
 
 Dette er regresjonsligningen vi tenker å bruke. I utgangspunktet vil vi se på forholdet mellom inntekt og holdning til tiltak som ikke skader norsk natur for deretter å legge til variabler for å se på om dette har noen innvirkning.
 
-Holdning til tiltak som ikke skader norsk natur = \$ \alpha\_1inntekt + \alpha\_2kjønn + \alpha\_3alder + \alpha\_4utdanning + \alpha\_5geografi + \alpha\_6 pol_holdning + \epsilon\$
+Holdning til tiltak som reduserer klimautslipp = $$ \alpha_1inntekt + \alpha_2kjønn + \alpha_3alder + \alpha_4utdanning + \alpha_5geografi + \alpha_6 politiskholdning + \epsilon\ $$
 
 Her kommer en tabell med oversikt over variablene og dens grenser.
 
@@ -370,7 +374,7 @@ Her kommer en tabell med oversikt over variablene og dens grenser.
 
 ## Referanser
 
-```{r}
+```{r echo=FALSE}
 count_datainntekt <- count(data2, inntekt)
 
 # Lag et stolpediagram
@@ -382,3 +386,34 @@ ggplot(count_datainntekt, aes(x = inntekt, y = n)) +
        y = "Antall") +
   theme_minimal()
 ```
+
+```{r echo=FALSE, warning=FALSE, message=FALSE, error=FALSE}
+
+#options(scipen = 999)
+#library(psych)
+#library(kableExtra)
+#table_des<-round(describe(df_growth2019[,c('avg_educ','avg_n','avg_p','avg_nsy','avg_nry',
+ #                                          'avg_gi','ln_gdppc0','avg_gx','ln_gdppc',
+  #                                         'avg_gdpgrowth'
+   #                     )], fast=TRUE),2)
+#table_des<- as.data.frame(table_des)
+#rownames(table_des)<-c("Gjennomsnittlig antall år i skole (avg_educ)", "Gjennomsnittlig årlig vekstrate i arbeidskraften (%) (avg_n)","Gjennomsnittlig årlig befolkningsvekst (%) (avg_p)","Gjennomsnittlig sparing for perioden 2000-2015 (%) (avg_nsy)","Gjennomsnittlig årlig vekstrate (negativ) i naturressurser (%) (avg_nry)","Gjennomsnittlig årlig vekstrate i investeringer (%) (avg_gi)","log BNP per innbygger i 2000 (ln_gdppc0)","Gjennomsnittlig årlig vekstrate i eksport (%) (avg_gx)","log BNP per innbygger i 2019 (ln_gdppc)","Gjennomsnittlig årlig vekstrate i BNP pc 2000-2019 (%) (avg_gdpgrowth)")
+
+
+
+#knitr::kable(table_des[,2:6], caption = "Deskriptiv statistikk", col.names = c("N", "Gj.snitt","Standardavvik","Min", "Maks")) %>%
+#  column_spec(1,width = "5cm") %>% 
+#  kable_styling(bootstrap_options = c("striped")) 
+```
+
+# Vedlegg
+
+## Bruk av KI
+
+Innledning
+
+Modell
+
+Metode og datagrunnlag
+
+Her er det i introduksjonen av kapitelet (ca de 7 første linjene) hvor KI kom med et eksempel på en start som vi da har gått ut fra for å komme igang, samt forslag på hvordan vi kunne sette opp kapittelet og hva man burde ha med av informasjon.
