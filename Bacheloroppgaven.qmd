@@ -19,6 +19,9 @@ format:
         \addbibresource{bachelor.bib}
         \pagestyle{fancy} 
         \addtokomafont{disposition}{\rmfamily}
+        \linespread{1.5}
+        \fontsize{12}{14}\selectfont 
+        \renewcommand{\rmdefault}{ptm} 
       keep-tex: true     
       toc: true 
       toc-title: "Innhold"    
@@ -26,7 +29,7 @@ format:
       number-sections: true   
       number-depth: 3     
       geometry: "left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm"     
-      fontsize: 12pt     
+      fontsize: 12pt  #tru om vi trenger denne siden vi har em lengre opp   
       colorlinks: true    
       bibliography: bachelor.bib     
       bibliographystyle: apa.cls
@@ -59,13 +62,15 @@ De fleste analyser omfatter BNP per capita for ulike land og hvordan de scorer p
 ```{r echo=FALSE, warning=FALSE, message=FALSE, error=FALSE, include=FALSE}
 #tømmer enviroment
 rm(list = ls())
-#Alle mulig nødvendige pakker.
 
+#starter med basic pakker
 library(tidyverse)
 library(car)
+library(latticeExtra)
+library(knitr)
 
 
-#setter inn for at en kan bruke norske bokstaver(særslikt maskinen denne filen er laget på)
+#setter inn for at en kan bruke norske bokstaver(særslikt for maskinen denne filen er laget på)
 Sys.setlocale("LC_ALL", "en_US.UTF-8")
 
 ```
@@ -78,48 +83,53 @@ NSD3127 <- read_csv("Norsk medborgerpanel runde 26, 2023/NSD3127.csv")
 ```
 
 ```{r echo=FALSE, warning=FALSE}
-#Lager datasett med de variablene vi skal bruke og kaller denne for runde_26
+#Lager datasett med de variablene vi skal bruke og kaller denne for runde_26.
 
-runde_26 <- NSD3127 %>% select(#r26_bgciv,
-                              r26k2_bgurb, 
+# de med # har vært alternativer vi har sett på mens man har utforsket datasettet for hva man kunne bruke og for hva som hang sammen og hadde verdier i samme rad(gjelder den i midten her som er # ut da den bare ikke virker mer av en eller annen grunn)
+
+#trekker ut de variablene vi skal bruke til et eget datasett
+runde_26 <- NSD3127[, c("r26k2_bgurb", "r26P1", "r26P2", "r26P3", "r26P5_1","r26P4_2", "r26P5_2", "r26P4_1", "r26k2_cemes_e", "r26k2_cemes_g", "r26k2_cemes_j", "r26k2_bginc", "r26k2_pcwcc", "r26k2_bglrs")]
+
+
+#runde_26 <- NSD3127 %>% select(#r26_bgciv,
+ #                             r26k2_bgurb, 
                               #r26k2_bgchi,
-                              r26P1,
-                              r26P2, 
-                              r26P3,
-                              #r26P5_1,
-                              r26P5_2, 
-                              r26P4_1,
+#                            r26P1,
+ #                             r26P2, 
+  #                            r26P3,
+   #                           r26P5_1,
+    #                          r26P5_2, 
+     #                         r26P4_1,
                               #r26P4_2,
                               #r26k2_cemes_a,
                               #r26k2_cemes_b,
                               #r26k2_cemes_c,
                               #r26k2_cemes_d,
-                              r26k2_cemes_e,
+                              #r26k2_cemes_e,
                               # r26k2_cemes_f,
-                              r26k2_cemes_g,
+                              #r26k2_cemes_g,
                               #r26k2_cemes_h,
                               #r26k2_cemes_i,
-                              r26k2_cemes_j,
+                              #r26k2_cemes_j,
                               #r26_pccos,
                               #r26_pccop,
                               #r26_pccoo,
                               #r26k2_pcpar,
-                              r26k2_bginc,
-                              r26k2_pcwcc,
-                              r26k2_bglrs)
+                              #r26k2_bginc,
+                              #r26k2_pcwcc,
+                              #r26k2_bglrs)
 
-#endrer videre navnene på variablene
-
+#endrer så videre navnene på variablene
 runde_26 <- runde_26 %>% rename(#sivilstatus = r26_bgciv, 
          geo_omr = r26k2_bgurb, 
          #barn = r26k2_bgchi,
          kjønn =r26P1,
          landsdel =r26P2, 
          fylke =r26P3,
-         #fødselsår_1 =r26P5_1,
+         fødselsår_1 =r26P5_1,
          fødselsår_2 = r26P5_2, 
          h_utd_1 = r26P4_1, 
-         #h_utd_2 = r26P4_2,
+         h_utd_2 = r26P4_2,
          #tiltak_kostnadseff = r26k2_cemes_a,
          #tiltak_støtte = r26k2_cemes_b,
          #tiltak_ikke_skade_okonomi = r26k2_cemes_c,
@@ -136,30 +146,31 @@ runde_26 <- runde_26 %>% rename(#sivilstatus = r26_bgciv,
          #st_valg_parti = r26k2_pcpar,
          inntekt = r26k2_bginc,
          klimaendringer = r26k2_pcwcc,
-         pol_holdning = r26k2_bglrs)
+         politisk_holdning = r26k2_bglrs)
 
 #view(runde_26)
 ```
 
 ```{r echo=FALSE, warning=FALSE}
-# Endrer alle verdier med 97 og 98 til NA for at ikke alle radene skal bli borte.
+# Endrer alle verdier med 97 og 98 til NA for at ikke alle radene skal bli borte ved filtrering.
 
-spesifikke_verdier <- c(97, 98)
+#velger/lager de verdiene som skal bort
+spes_verdier <- c(97, 98)
 
-# Loop gjennom kolonnene og erstatt de spesifikke verdiene med NA
+# Loop gjennom kolonnene og erstatt  verdiene 97 og 98 med NA
 for (col in colnames(runde_26)) {
-  runde_26[[col]][runde_26[[col]] %in% spesifikke_verdier] <- NA
+  runde_26[[col]][runde_26[[col]] %in% spes_verdier] <- NA
 }
 
-#rydde data og fjerne alle som ikke har verdi i tiltak-utslippskutt
+#rydde data og fjerne alle radene som ikke har verdi i tiltak-utslippskutt
 data1 <- runde_26[complete.cases(runde_26$tiltak_utslippskutt), ]
 
-#så fjerne alle som har inntekt under 150 000
+#så fjerne alle som har inntekt under 150 000(grunn står i dokumentet)
 data2 <- data1[complete.cases(data1$inntekt) & data1$inntekt != 1, ]
 
 ```
 
-```{r echo=FALSE, fig.width=4, fig.height=2}
+```{r echo=FALSE, fig.width=6, fig.height=4}
 
 #lage introfiguren med hvor bekymret er du for klimaendringer hvor
 #man teller opp hvor mange man har av hvert svar
@@ -178,7 +189,7 @@ ggplot(count, aes(x = klimaendringer, y = n)) +
        x = "Bekymringsnivå",
        y = "Antall",
        caption = "Bekymringsnivå: 1 = Ikke bekymret, 5 = Veldig bekymret") +
-  theme_minimal() +  # Minimalt tema
+  theme_minimal() +
   theme(plot.title = element_text(size = 16, hjust = 0.5, face = "bold"),  # Justering av tittelstørrelse og plassering
         axis.title = element_text(size = 14),  # Justering av akseetikettstørrelse
         plot.subtitle = element_text(size = 14, hjust = 0.5),  # Justering av undertittelstørrelse og plassering
@@ -195,7 +206,6 @@ ggplot(count, aes(x = klimaendringer, y = n)) +
 data2$mann <- ifelse(data2$kjønn == 1, 1, 0)
 
 #nå skal vi lage alle faktorene man eventuelt blir å trenge
-
 data2 <- data2 %>%
   mutate(født = case_when(
     fødselsår_2 == 1 ~ '1959_og_før',
@@ -219,7 +229,7 @@ data2 <- data2 %>%
   mutate(inntekter = fct_relevel(inntekter, "150 001 - 300 000"))
 ```
 
-```{r}
+```{r echo=FALSE, warning=FALSE, message=FALSE, error=FALSE}
 #leker oss med å se om reg fungerer
 reg3 <- lm(tiltak_utslippskutt ~ inntekter + utdanning, data = data2)
 
@@ -358,33 +368,101 @@ Dette er regresjonsligningen vi tenker å bruke. I utgangspunktet vil vi se på 
 
 Holdning til tiltak som reduserer klimautslipp = $$ \alpha_1inntekt + \alpha_2kjønn + \alpha_3alder + \alpha_4utdanning + \alpha_5geografi + \alpha_6 politiskholdning + \epsilon\ $$
 
-Her kommer en tabell med oversikt over variablene og dens grenser.
+som vil si at....
 
-## Deskriptiv statistikk
-
-## Empiriske resultater
-
-## Resultat
-
-## Grafisk analyse
-
-## Diskusjon
-
-## Begrensninger ved analysen
-
-## Referanser
+For å definere de variablene vi har valgt så har vi
 
 ```{r echo=FALSE}
-count_datainntekt <- count(data2, inntekt)
+
+library(xtable)
+# Opprett dataene for tabellen
+Variabel <- c("Kjønn", "Alder", "Utdanning", "Geografi","Politisk holdning", "Inntekt")
+Forklaring <- c("Vi har to kjønn i datasettet. Kvinne = 0 og mann = 1.",
+                "Vi har alderen delt i ulike grupper som er 1959_og_før, 1960_1989, 1990_og_etter.",
+                "Vi har Utdanning i gruppe som grunnskole, videregående og høyere.",
+                "Vi har gruppevis inndeling i hvor individet bor, fylkevis og område hvor individet har svart om de bor alt ifra, i en storby til et spredsbygd strøk.",
+                "Vi har hvor individet vil plassere seg på en skala politisk at jo mer venstreorientert de er jo nærmere verdi 0 er de, og jo nærmere høyreorientert de er jo nærmere verdi 10.",
+                "Vi har individets bruttoinntekt som er definert i disse kategoriene: Under 150 000, 150 001 - 300 000, 300 001 - 400 000, 400 001 - 500 000, 500 001 - 600 000, 600 001 - 700 000, 700 001 - 1 000 000, Mer enn 1 000 000.")
+
+# Opprett den manuelle tabellen ved hjelp av data.frame()
+manuell_tabell <- data.frame(Variabel = Variabel, Forklaring = Forklaring)
+
+# Vis den manuelle tabellen
+
+
+```
+
+```{r echo=FALSE}
+
+# Opprett dataene for tabellen
+Variabel <- c("Kjønn", "Alder", "Utdanning", "Geografi","Politisk holdning", "Inntekt")
+Forklaring <- c("Vi har to kjønn i datasettet,Kvinne = 0 og mann = 1","Vi har alderen delt i ulike grupper som er 1959_og_før, 1960_1989, 1990_og_etter", " Vi har utdanning i gruppe som grunnskole,videregående og høyere","Vi har gruppevis inndeling i hvor individet bor, fylkevis og område hvor individet har svart om de bor alt ifra,i en storby til et spredsbygd strøk", "Vi har hvor individet vil plasere seg på en skala politisk at jo mer venstreorientert de er jo nærmere verdi 0 er de, og jo nærmere høyreorientert de er jo nærmere verdi 10","Vi har individets bruttoinntekt som er definert i disse kategoriene: Under 150 000,150 001 - 300 000,300 001 - 400 000,400 001 - 500 000,500 001 - 600 000,600 001 - 700 000,700 001 - 1 000 000,Mer enn 1 000 000")
+
+# Opprett den manuelle tabellen ved hjelp av data.frame()
+manuell_tabell <- data.frame(Variabel = Variabel, Forklaring = Forklaring)
+
+# Vis den manuelle tabellen
+knitr::kable(manuell_tabell, format = "markdown")
+
+
+```
+
+```{r}
+
+```
+
+I tabell... ser vi verdiene på de forskjellige variablene samt min og max.....
+
+```{r echo=FALSE, warning=FALSE, error=FALSE}
+
+#options(scipen = 999)
+#library(psych)
+#library(kableExtra)
+
+#table_1 <-round(describe(data2[,c('geo_omr', 'kjønn','landsdel', 'fylke', 'fødselsår_1','fødselsår_2'
+ #                                 ,'h_utd_1', 'tiltak_utslippskutt', 'tiltak_teknologi_kutt'
+  #                                ,'inntekt','klimaendringer','politisk_holdning')], fast=TRUE),2)
+
+#table_1 <- as.data.frame(table_1)
+
+#rownames(table_des)<-c("Gjennomsnittlig antall år i skole (avg_educ)", "Gjennomsnittlig årlig vekstrate i arbeidskraften (%) (avg_n)","Gjennomsnittlig årlig befolkningsvekst (%) (avg_p)","Gjennomsnittlig sparing for perioden 2000-2015 (%) (avg_nsy)","Gjennomsnittlig årlig vekstrate (negativ) i naturressurser (%) (avg_nry)","Gjennomsnittlig årlig vekstrate i investeringer (%) (avg_gi)","log BNP per innbygger i 2000 (ln_gdppc0)","Gjennomsnittlig årlig vekstrate i eksport (%) (avg_gx)","log BNP per innbygger i 2019 (ln_gdppc)","Gjennomsnittlig årlig vekstrate i BNP pc 2000-2019 (%) (avg_gdpgrowth)")
+
+
+
+#knitr::kable(table_1[,2:6], caption = "Deskriptiv statistikk", col.names = c("N", "Gj.snitt","Standardavvik","Min", "Maks")) %>% column_spec(1,width = "5cm") %>% kable_styling(bootstrap_options = c("striped")) 
+
+```
+
+For å forklare de forskjellige variablenes verdi fra tabellen er
+
+```{r echo=FALSE}
+count_datainntekt <- count(data2, inntekter)
 
 # Lag et stolpediagram
-ggplot(count_datainntekt, aes(x = inntekt, y = n)) +
+ggplot(count_datainntekt, aes(x = inntekter, y = n)) +
   geom_bar(stat = "identity", fill = "purple") +
   geom_text(aes(label = n), vjust = -0.5, size = 3.5) + 
   labs(title = "Antall forekomster av hver verdi i kolonnen 'inntekt'",
        x = "Verdi",
        y = "Antall") +
   theme_minimal()
+```
+
+```{r echo=FALSE}
+# Beregner prosentandelen av totalen
+count_datainntekt <- count(data2, inntekter)
+count_datainntekt$prosentandel <- count_datainntekt$n / sum(count_datainntekt$n) * 100
+
+# Lager et stolpediagram med prosentandelen på hver stolpe
+ggplot(count_datainntekt, aes(x = inntekter, y = prosentandel)) +
+  geom_bar(stat = "identity", fill = "purple") +
+  geom_text(aes(label = paste0(round(prosentandel, 1), "%")), vjust = -0.5, size = 3.5) + 
+  labs(title = "Prosentandel av hver verdi i kolonnen 'inntekt'",
+       x = "Verdi",
+       y = "Prosentandel") +
+  theme_minimal() +
+  coord_flip()
+
 ```
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE, error=FALSE}
@@ -406,14 +484,70 @@ ggplot(count_datainntekt, aes(x = inntekt, y = n)) +
 #  kable_styling(bootstrap_options = c("striped")) 
 ```
 
-# Vedlegg
+```{=tex}
+\newpage
+\printbibliography[heading=none]
+```
+# Referanser
+
+\newpage
 
 ## Bruk av KI
 
-Innledning
+### Innledning
 
-Modell
+### Modell
 
-Metode og datagrunnlag
+### Metode og datagrunnlag
 
 Her er det i introduksjonen av kapitelet (ca de 7 første linjene) hvor KI kom med et eksempel på en start som vi da har gått ut fra for å komme igang, samt forslag på hvordan vi kunne sette opp kapittelet og hva man burde ha med av informasjon.
+
+### For Kode:
+
+vi har brukt kodene vi har lært og når vi har stått fast eller ikke vet hvordan vi skal få til noe så har vi spurt chat.openai.com, ekspempel spørr vi; Jeg har denne koden: \# Beregner prosentandelen av totalen
+
+count_datainntekt \<- count(data2, inntekter)
+
+count_datainntekt\$prosentandel \<- count_datainntekt\$n / sum(count_datainntekt\$n) \* 100
+
+\# Lager et stolpediagram med prosentandelen på hver stolpe
+
+ggplot(count_datainntekt, aes(x = inntekter, y = prosentandel)) +
+
+geom_bar(stat = "identity", fill = "purple") +
+
+geom_text(aes(label = paste0(round(prosentandel, 1), "%")), vjust = -0.5, size = 3.5) +
+
+labs(title = "Prosentandel av hver verdi i kolonnen 'inntekt'",
+
+x = "Verdi",
+
+y = "Prosentandel") +
+
+theme_minimal(), men vil ha stolpene sidelengs, hvordan gjør jeg det?. svaret jeg får da er:
+
+For å endre stolpene til å være sidelengs i stedet for vertikale, kan du bruke **`coord_flip()`**-funksjonen i ggplot2. Her er hvordan du kan gjøre det:
+
+library(ggplot2)
+
+\# Lag et stolpediagram
+
+ggplot(count_datainntekt, aes(x = inntekt, y = n)) +
+
+geom_bar(stat = "identity", fill = "purple") +
+
+geom_text(aes(label = n), hjust = 1.5, size = 3.5) +
+
+labs(title = "Antall forekomster av hver verdi i kolonnen 'inntekt'",
+
+x = "Antall",
+
+y = "Verdi") +
+
+theme_minimal() +
+
+coord_flip()
+
+Dette vil flippe aksen, slik at stolpene blir horisontale istedenfor vertikale. Jeg justerte også **`hjust`**-parameteren i **`geom_text()`** for å justere teksten riktig i det horisontale formatet.
+
+Vi har merket i kodene på de delene vi har brukt fra KI og lagt inn i vår egen kode, med \# (OpenAI, 2024)
