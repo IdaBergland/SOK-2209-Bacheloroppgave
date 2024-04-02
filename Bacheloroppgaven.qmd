@@ -45,8 +45,6 @@ Her kommer tekst
 
 # Innledning
 
-Ta inn fra prosjektbeskrivelsen?
-
 Kan bruke noe fra klimameldingen i innledning, eventuelt andre plasser.\[\@miljødepartementet2021\]
 
 Kan dette brukes?
@@ -57,7 +55,39 @@ Politiske holdinger kan også spille en rolle. Det er ikke uvanlig at man observ
 
 Det er også undersøkelser som konkluderer med det motsatte. Med økende inntekt faller interesser for å ta miljøhensyn. Dette er forklart med at jo høyere inntekt man har, jo større mulighet er det for å kjøpe seg fri fra konsekvensene av klimaendringene. Har man lite , er man skeptisk til å sette seg i en situasjon der det lille man har kan mistes. Har man mye, kan man flytte hvis problemene blir påfallende, eller forsikre seg mot eventuelle skadevirkninger.\[\@nauges_relationship_2021\]
 
-De fleste analyser omfatter BNP per capita for ulike land og hvordan de scorer på en skala for klimatiltakforståelse
+De fleste analyser omfatter BNP per capita for ulike land og hvordan de scorer på en skala for klimatiltakforståelse.
+
+Ny tekst
+
+Kuznet lanserte i 1955 sin teori om forholdet mellom utvikling i BNP per capita og inntektulikhet[@kuznets2022]. Han hevdet at sammenhengen fulgte en omvendt U-form slik at ulikhetene ville avta etter hvert som økonomien i et land vokste. I 1991 presenterte [@grossman1991] resultater som viste at denne modellen også kunne brukes om forholdet mellom BNP per cap og forurensning. I et lands økonomiske utvikling(målt i BNP) ville forurensningen være økende i begynnelsen for etter hvert å avta, og så etter hvert reduseres. Dette ble forklart med at i begynnelsen ble økonomisk vekst prioritert og miljøhensyn hadde ingen plass. Etter hvert som et lands økonomi vokste, ble miljøhensyn tvunget fram gjennom økt etterspørsel etter miljøvennlige varer og tjenester [@stern2004]. Denne teorien kalles miljø-Kuznets modellen.
+
+Denne teorien fikk så stor innflytelse at Verdensbanken i 1992 omfavnet den[@worldbank1992] og kommenterte den slik:
+
+Sitat: "standpunktet om at økende økonomisk aktivitet nødvendigvis vil skade miljøet er basert på statiske antakelser om teknologi, preferanser og miljøinvesteringer" ([@worldbank1992a]s. 38, egen oversettelse) og at "Etter hvert som inntektene øker, vil etterspørselen etter forbedret miljøkvalitet øke. Av samme grunn vil også tilgjengelige ressurser for investeringer øke" ([@worldbank1992a]s. 39, egen oversettelse).
+
+Miljø-Kuznets modellen har siden den gang vært anvendt på BNP per cap mot en rekke miljøvariabler med variabelt resultat, men mange av undersøkelsene har konkludert med at en slik sammenheng kan observeres. Vi viser til denne artikkelen som har en fyldig oversikt over arbeid knyttet til denne modellen([@stern2004a])
+
+Vi vil ta fram noen arbeid:
+
+[@andreoni2001] sier i sin artikkel at det kan være flere forklaringer på den omvendte U-formen på Miljø-Kuznets-kurven. For det første kan dette uttrykke en naturlig økonomisk utvikling med overgang fra et agarsamfunn til industriell produksjon og videre til mer miljøvennlig service- og tjenesteproduksjon. Dette kan være forårsaket av at miljøfiendlig produksjon flyttes til fattige utviklingsland. Hvis det er dette som gir den fallende del av kurven, vil ikke Miljø-Kuznets-kurven kunne være forklaringsmodell for alle land fordi de fattigste vil ikke ha noen land å eksportere sin forurensende produksjon. En annen forklaring er at forurensning kan sees på som en negativ eksternalitet ved produksjon. For å tvinge fram endring i retning av reduksjon av forurensning, trengs det sterke institusjoner og lovverk. Dette finner vi oftest og mer i industrialiserte rike land.
+
+[@mcconnell1997] sier at det er tre krefter som kan bidra til formen på Miljø-Kuznets-kurve. For det første kan det være sannsynlig at forurensningen reduseres når inntekten øker fordi etterspørselsmønsteret endrer seg. Med økende inntekt vil etterspørselen til husholdningene rette seg mer mot tjenester og dermed forurense mindre. For det andre vil handel kunne bidra gjennom større import av varer av forurensende produksjon. På den måten vil importlandet slippe forurensingen. Forfatterenes tredje poeng er at når inntektene øker, vil husholdningene etterspørre mer miljøkvalitet og forvente at myndighetene gjennom lov- og regelverk legger til rette for dette.
+
+**Undersøkelser som omfatter husholdninger**
+
+Alle disse undersøkelsene tar utgangspunkt i økonomisk utvikling i land, men det er også mange undersøkelser som ser på husholdsøkonomi og miljøeffekter. Da endres spørsmålet til om det er en sammenheng mellom enkeltmenneskenes økonomi og hvordan de forholder seg til miljøutfordringer. Med andre ord, vil preferansene hos enkeltmenneskene endre seg når inntekten endres?
+
+[@kahn1998] gjennomgår i sin undersøkelse forholdet mellom inntekt og utslipp av hydrokarboner fra biler på husholdningsnivå. Bilparken i lavinntektshusholdninger vil ofte omfatte relativt gamle biler som er dårlig vedlikeholdt med stort utslipp av klimagasser. I husholdninger med høyere inntekter vil bilene være nyere med teknologi som gir lavere utslipp. Det vil kanskje også være flere biler i slike husholdninger. Resultatene viser at forholdet kan beskrives ved en omvendt U-formet kurve, også kalt Miljø-Kuznets-kurve.
+
+[@karpinska] har undersøkt om utslipp av klimagasser som følge av energibruk endres med inntekten i polske husholdninger. De finner at Miljø-Kuznets-kurven dekker dette forholdet godt. For lave inntekter vil underforbruk av strøm og gass (fordi det er dyrt) og bruk av kull og ved gi høye utslipp. Med økende inntekt vil bruken av energikilder med lav klimagassutslipp øke, og boligene vil være bedre isolert.
+
+[@giovanis2013] bruker paneldata fra the Britsh Household Survey fra 1991-2009 og ser på forholdet mellom tre mål på luftkvalitet( Oson, Svoveldioksyd, NOX) og person- og husholdsinntekt. De bruker flere ulike statistiske tilnærminger, men hovedkonklusjonen er at Miljø-Kuznets-teorien holder.
+
+[@roca2003] peker på at det er to hovedretninger i forklaringene av hvorfor forholdet mellom miljøkvalitet og inntekt framstår som en omvendt U-kurve. Den første foreslår at det er en endogen endring i etterspørselen etter varer og tjenester. Endringen består i dreining av etterspørselen mot varer og tjenester med lite miljøavtrykk, med tilsvarende endring over tid i strukturen i næringslivet. Samtidig er det viktig å analysere hva dette egentlig innebærer. Hvis et land importerer varer som er miljøvennlig i bruk, men som er produsert på en lite bærekraftig måte, er jo bare miljøutfordringene eksportert. Et eksempel her er økningen i antall elektriske biler som i seg selv er miljøvennlig tiltak, men der produksjonen av batteriene til bilene foregår på en meget forurensende måte . (Kilde)
+
+Den andre retningen har også individuelle preferanser og relativ etterspørsel etter varer og tjenester som basis. Men her skilles det mellom etterspørsel etter ordinære varer og tjenester og miljøkvalitet. Det antas at høy inntektselastisitet i etterspørselen etter miljøkvalitet og at det er dette som at økonomisk vekst kan vedvare samtidig som presset mot miljøet avtar.
+
+En annen innfallsvinkel finner vi hos [@nauges2021]. Hypotesen er at husholdninger i rike land er mindre bekymret for klimaendringer fordi rikdom skaper en buffer mot konsekvensene av endringene. Utvalget er en husholdningsundersøkelse som omfattet 11 OECD-land og over 10 000 husholdninger. De finner et statistisk signifikant negativt forhold mellom land- og husholdningsrikdom og individers oppfatning av alvoret i klimaendringer.
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE, error=FALSE, include=FALSE}
 #tømmer enviroment
@@ -203,7 +233,7 @@ ggplot(count, aes(x = klimaendringer, y = n)) +
 
 # endre for kjønn
 # Kjønnsdummy (1 for mann, 0 for kvinne)
-data2$mann <- ifelse(data2$kjønn == 1, 1, 0)
+data2$mann <- ifelse(data2$kjønn == 1, 1, 0) # kode hentet fra
 
 #nå skal vi lage alle faktorene man eventuelt blir å trenge
 data2 <- data2 %>%
@@ -236,21 +266,35 @@ reg3 <- lm(tiltak_utslippskutt ~ inntekter + utdanning, data = data2)
 summary(reg3)
 ```
 
+## Teori
+
+Vi har valgt følgende uavhengig variabel:
+
+Hvor viktig mener du følgende hensyn bør være når man velger tiltak for å redusere klimagassutslipp: Tiltaket gir utslippskutt i Norge med undertekst:
+
+*En rekke tiltak er aktuelle for å redusere klimagassutslipp. Når norske politikere skal velge mellom ulike tiltak er det flere hensyn som må tas. Hvor viktig mener du at følgende hensyn bør være når man skal bestemme hvilke tiltak som skal innføres?: Tiltaket gir utslippskutt i Norge*
+
+Det spørres altså her om hvor viktig man synes det er at tiltakene gir utslippskutt i Norge. En høy score vil være uttrykk for høyere miljøbevissthet enn en lav. Det vil også gi uttrykk for at man er villig til å endre sin adferd hvis det er nødvendig.
+
+Med basis i det teoretiske grunnlaget kan vi da si følgende:
+
+Hvis det er en miljø-kuznets-sammenheng mellom miljøholdninger og inntekt, vil vi kunne forvente at økende inntekt gir økende score på vår variabel. Inntil et visst inntektsnivå vil dette skje, deretter vil den falle. Vi kan tenke oss at veksten i scoren blir mindre og mindre av en marginal endring i inntekten. Årsaken er (hypotesen til nauges) at jo rikere individene er, jo mer tror de at rikdommen kan kjøpe dem fri for virkningene av klimagassutslippene. For veldig høye inntekter kan dette gi lavere miljøscore. Det kan også være at interessen for utslippskutt i Norge er dalende for de rikeste fordi de ikke er så opptatt av eget lands bidrag.
+
 # Modell
 
 ## Om modellen
 
-Vi vil nå gjennomgå en modell som tar for seg forholdet mellom inntekt og miljølhensyn. Denne kalles Miljø-Kuznets-kurve og går i korte trekk ut på at forholdet mellom forurensning og inntekt i et land(BNP per cap) kan beskrives som en omvendt U-formet kurve. Med den økonomiske utviklingen i et land følger i begynnelsen økende forurensningsproblemer inntil et visst punkt. Etter det, vil deler av produksjonen også omfatte forurensningsreduserende produksjon og eksisterende produksjon blir mer miljøvennlig. Dette vil føre til at forurensingen reduseres. Forklaringene på dette er blant annet overgang fra et agarsamfunn til industriell produksjon og videre til mer miljøvennlig service- og tjenesteproduksjon. Et annet element i forklaringene er at med økende inntekt vil menneskene ha høyere preferanser for økte miljøstandarder. [@dinda2004]
+Vi vil nå gjennomgå en modell som tar for seg forholdet mellom forurensning og inntekt. Modellen kalles Miljø-Kuznets-kurve og går i korte trekk ut på at sammenhengen mellom forurensning og inntekt i et land(BNP per cap) kan beskrives som en omvendt U-formet kurve. Med den økonomiske utviklingen i et land følger i begynnelsen økende forurensningsproblemer inntil et visst punkt. Etter det, vil deler av produksjonen også omfatte forurensningsreduserende produksjon og eksisterende produksjon blir mer miljøvennlig. Dette vil føre til at forurensingen reduseres [@andreoni2001]. Et annet element i forklaringene er at med økende inntekt vil menneskene ha høyere preferanser for økte miljøstandarder. [@dinda2004]
 
-Det er også verdt å merke seg at økende verdenshandel har medført at miljøfiendtlig produksjon blir flyttet fra land med strenge miljøreguleringer til utviklingsland med mindre vektlegging på miljøkonsekvenser. Dette kan også være et bidrag til at forurensning er avtakende i høyt industrialiserte land. Dette er kalt "Polution Haven Hypotesis" (PHH). [@dinda2004, 437]
+Det er også verdt å merke seg at økende verdenshandel har medført at miljøfiendtlig produksjon blir flyttet fra høyinntektsland med strenge miljøreguleringer til utviklingsland med mindre vektlegging på miljøkonsekvenser. Dette kan også være et bidrag til at forurensning er avtakende i høyt industrialiserte land. Dette er kalt "Polution Haven Hypotesis" (PHH). [@dinda2004, 437]
 
 ## Miljø-Kuznetskurven
 
-Vi vil nå gjennomgå en enkel modell for forholdet mellom forurensning og inntekt. Framstillingen er basert på artikkelen til [@andreoni2001]
+Framstillingen er basert på artikkelen til [@andreoni2001]. De setter opp en enkel statisk modell som tar utgangspunkt i mikronivået og viser at miljø-Kuznets -kurven(EKC) kan utledes direkte fra den teknologiske koblingen mellom konsumet av et etterspurt gode og behandling av uønskete biprodukter fra konsum av godet.
 
 ### Antakelser
 
-Vi antar først at vi har en økonomi som består av en person. Vi antar videre at denne personen har nytte av å konsumere ett privat gode , C, og av forurensing P. Nyttefunksjonen kan da skrives som:
+Vi antar først at vi har en økonomi som består av en person. Dette er en veldig forenkling, men sikrer oss at det ikke er noen eksterne virkninger. Vi antar videre at denne personen har nytte av å konsumere ett privat gode , C, og av forurensing P. Nyttefunksjonen kan da skrives som:
 
 $$
 U=U(C,P)
