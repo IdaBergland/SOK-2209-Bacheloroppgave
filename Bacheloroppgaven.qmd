@@ -2,7 +2,7 @@
 format:   
     pdf:    
       include-before-body:       
-        - title.tex.txt 
+        - title.tex
         - \usepackage{fancyhdr}
         - \pagestyle{fancy}
         - \fancyhf{}
@@ -57,38 +57,6 @@ Det er også undersøkelser som konkluderer med det motsatte. Med økende inntek
 
 De fleste analyser omfatter BNP per capita for ulike land og hvordan de scorer på en skala for klimatiltakforståelse.
 
-Ny tekst
-
-Kuznet lanserte i 1955 sin teori om forholdet mellom utvikling i BNP per capita og inntektulikhet[@kuznets2022]. Han hevdet at sammenhengen fulgte en omvendt U-form slik at ulikhetene ville avta etter hvert som økonomien i et land vokste. I 1991 presenterte [@grossman1991] resultater som viste at denne modellen også kunne brukes om forholdet mellom BNP per cap og forurensning. I et lands økonomiske utvikling(målt i BNP) ville forurensningen være økende i begynnelsen for etter hvert å avta, og så etter hvert reduseres. Dette ble forklart med at i begynnelsen ble økonomisk vekst prioritert og miljøhensyn hadde ingen plass. Etter hvert som et lands økonomi vokste, ble miljøhensyn tvunget fram gjennom økt etterspørsel etter miljøvennlige varer og tjenester [@stern2004]. Denne teorien kalles miljø-Kuznets modellen.
-
-Denne teorien fikk så stor innflytelse at Verdensbanken i 1992 omfavnet den[@worldbank1992] og kommenterte den slik:
-
-Sitat: "standpunktet om at økende økonomisk aktivitet nødvendigvis vil skade miljøet er basert på statiske antakelser om teknologi, preferanser og miljøinvesteringer" ([@worldbank1992a]s. 38, egen oversettelse) og at "Etter hvert som inntektene øker, vil etterspørselen etter forbedret miljøkvalitet øke. Av samme grunn vil også tilgjengelige ressurser for investeringer øke" ([@worldbank1992a]s. 39, egen oversettelse).
-
-Miljø-Kuznets modellen har siden den gang vært anvendt på BNP per cap mot en rekke miljøvariabler med variabelt resultat, men mange av undersøkelsene har konkludert med at en slik sammenheng kan observeres. Vi viser til denne artikkelen som har en fyldig oversikt over arbeid knyttet til denne modellen([@stern2004a])
-
-Vi vil ta fram noen arbeid:
-
-[@andreoni2001] sier i sin artikkel at det kan være flere forklaringer på den omvendte U-formen på Miljø-Kuznets-kurven. For det første kan dette uttrykke en naturlig økonomisk utvikling med overgang fra et agarsamfunn til industriell produksjon og videre til mer miljøvennlig service- og tjenesteproduksjon. Dette kan være forårsaket av at miljøfiendlig produksjon flyttes til fattige utviklingsland. Hvis det er dette som gir den fallende del av kurven, vil ikke Miljø-Kuznets-kurven kunne være forklaringsmodell for alle land fordi de fattigste vil ikke ha noen land å eksportere sin forurensende produksjon. En annen forklaring er at forurensning kan sees på som en negativ eksternalitet ved produksjon. For å tvinge fram endring i retning av reduksjon av forurensning, trengs det sterke institusjoner og lovverk. Dette finner vi oftest og mer i industrialiserte rike land.
-
-[@mcconnell1997] sier at det er tre krefter som kan bidra til formen på Miljø-Kuznets-kurve. For det første kan det være sannsynlig at forurensningen reduseres når inntekten øker fordi etterspørselsmønsteret endrer seg. Med økende inntekt vil etterspørselen til husholdningene rette seg mer mot tjenester og dermed forurense mindre. For det andre vil handel kunne bidra gjennom større import av varer av forurensende produksjon. På den måten vil importlandet slippe forurensingen. Forfatterenes tredje poeng er at når inntektene øker, vil husholdningene etterspørre mer miljøkvalitet og forvente at myndighetene gjennom lov- og regelverk legger til rette for dette.
-
-**Undersøkelser som omfatter husholdninger**
-
-Alle disse undersøkelsene tar utgangspunkt i økonomisk utvikling i land, men det er også mange undersøkelser som ser på husholdsøkonomi og miljøeffekter. Da endres spørsmålet til om det er en sammenheng mellom enkeltmenneskenes økonomi og hvordan de forholder seg til miljøutfordringer. Med andre ord, vil preferansene hos enkeltmenneskene endre seg når inntekten endres?
-
-[@kahn1998] gjennomgår i sin undersøkelse forholdet mellom inntekt og utslipp av hydrokarboner fra biler på husholdningsnivå. Bilparken i lavinntektshusholdninger vil ofte omfatte relativt gamle biler som er dårlig vedlikeholdt med stort utslipp av klimagasser. I husholdninger med høyere inntekter vil bilene være nyere med teknologi som gir lavere utslipp. Det vil kanskje også være flere biler i slike husholdninger. Resultatene viser at forholdet kan beskrives ved en omvendt U-formet kurve, også kalt Miljø-Kuznets-kurve.
-
-[@karpinska] har undersøkt om utslipp av klimagasser som følge av energibruk endres med inntekten i polske husholdninger. De finner at Miljø-Kuznets-kurven dekker dette forholdet godt. For lave inntekter vil underforbruk av strøm og gass (fordi det er dyrt) og bruk av kull og ved gi høye utslipp. Med økende inntekt vil bruken av energikilder med lav klimagassutslipp øke, og boligene vil være bedre isolert.
-
-[@giovanis2013] bruker paneldata fra the Britsh Household Survey fra 1991-2009 og ser på forholdet mellom tre mål på luftkvalitet( Oson, Svoveldioksyd, NOX) og person- og husholdsinntekt. De bruker flere ulike statistiske tilnærminger, men hovedkonklusjonen er at Miljø-Kuznets-teorien holder.
-
-[@roca2003] peker på at det er to hovedretninger i forklaringene av hvorfor forholdet mellom miljøkvalitet og inntekt framstår som en omvendt U-kurve. Den første foreslår at det er en endogen endring i etterspørselen etter varer og tjenester. Endringen består i dreining av etterspørselen mot varer og tjenester med lite miljøavtrykk, med tilsvarende endring over tid i strukturen i næringslivet. Samtidig er det viktig å analysere hva dette egentlig innebærer. Hvis et land importerer varer som er miljøvennlig i bruk, men som er produsert på en lite bærekraftig måte, er jo bare miljøutfordringene eksportert. Et eksempel her er økningen i antall elektriske biler som i seg selv er miljøvennlig tiltak, men der produksjonen av batteriene til bilene foregår på en meget forurensende måte . (Kilde)
-
-Den andre retningen har også individuelle preferanser og relativ etterspørsel etter varer og tjenester som basis. Men her skilles det mellom etterspørsel etter ordinære varer og tjenester og miljøkvalitet. Det antas at høy inntektselastisitet i etterspørselen etter miljøkvalitet og at det er dette som at økonomisk vekst kan vedvare samtidig som presset mot miljøet avtar.
-
-En annen innfallsvinkel finner vi hos [@nauges2021]. Hypotesen er at husholdninger i rike land er mindre bekymret for klimaendringer fordi rikdom skaper en buffer mot konsekvensene av endringene. Utvalget er en husholdningsundersøkelse som omfattet 11 OECD-land og over 10 000 husholdninger. De finner et statistisk signifikant negativt forhold mellom land- og husholdningsrikdom og individers oppfatning av alvoret i klimaendringer.
-
 ```{r echo=FALSE, warning=FALSE, message=FALSE, error=FALSE, include=FALSE}
 #tømmer enviroment
 rm(list = ls())
@@ -97,7 +65,7 @@ rm(list = ls())
 library(tidyverse)
 library(car)
 library(latticeExtra)
-library(knitr)
+#library(knitr)
 
 
 #setter inn for at en kan bruke norske bokstaver(særslikt for maskinen denne filen er laget på)
@@ -156,15 +124,15 @@ runde_26 <- runde_26 %>% rename(#sivilstatus = r26_bgciv,
          kjønn =r26P1,
          landsdel =r26P2, 
          fylke =r26P3,
-         fødselsår_1 =r26P5_1,
-         fødselsår_2 = r26P5_2, 
-         h_utd_1 = r26P4_1, 
+         Fødselsår_tiår =r26P5_1,
+         Fødselsår_periode = r26P5_2, 
+         Utdanning = r26P4_1, 
          h_utd_2 = r26P4_2,
          #tiltak_kostnadseff = r26k2_cemes_a,
          #tiltak_støtte = r26k2_cemes_b,
          #tiltak_ikke_skade_okonomi = r26k2_cemes_c,
          #tiltak_arbeidspl = r26k2_cemes_d,
-         tiltak_utslippskutt = r26k2_cemes_e, 
+         Tiltak_utslippskutt = r26k2_cemes_e, 
          #tiltak_globalt_ansvar = r26k2_cemes_f,
          tiltak_teknologi_kutt = r26k2_cemes_g,
          #tiltaket_ekspert = r26k2_cemes_h,
@@ -174,9 +142,9 @@ runde_26 <- runde_26 %>% rename(#sivilstatus = r26_bgciv,
          #tillit_politikere = r26_pccop,
          #tillit_andre = r26_pccoo,
          #st_valg_parti = r26k2_pcpar,
-         inntekt = r26k2_bginc,
+         Inntekt = r26k2_bginc,
          klimaendringer = r26k2_pcwcc,
-         politisk_holdning = r26k2_bglrs)
+         Politisk_holdning = r26k2_bglrs)
 
 #view(runde_26)
 ```
@@ -193,10 +161,10 @@ for (col in colnames(runde_26)) {
 }
 
 #rydde data og fjerne alle radene som ikke har verdi i tiltak-utslippskutt
-data1 <- runde_26[complete.cases(runde_26$tiltak_utslippskutt), ]
+data1 <- runde_26[complete.cases(runde_26$Tiltak_utslippskutt), ]
 
 #så fjerne alle som har inntekt under 150 000(grunn står i dokumentet)
-data2 <- data1[complete.cases(data1$inntekt) & data1$inntekt != 1, ]
+data2 <- data1[complete.cases(data1$Inntekt) & data1$Inntekt != 1, ]
 
 ```
 
@@ -238,16 +206,16 @@ data2$mann <- ifelse(data2$kjønn == 1, 1, 0) # kode hentet fra
 #nå skal vi lage alle faktorene man eventuelt blir å trenge
 data2 <- data2 %>%
   mutate(født = case_when(
-    fødselsår_2 == 1 ~ '1959_og_før',
-    fødselsår_2 == 2 ~ '1960_1989',
+    Fødselsår_periode == 1 ~ '1959_og_før',
+    Fødselsår_periode == 2 ~ '1960_1989',
     TRUE ~ '1990_og_etter'
   )) %>%
   mutate(født = factor(født, levels = c('1959_og_før', '1960_1989', '1990_og_etter'))) %>%
-   mutate(utdanning = factor(h_utd_1, 
+   mutate(utdanning = factor(Utdanning, 
                             levels = c(1, 2, 3),
                             labels = c("grunnskole", "videregående", "høyere"))) %>%
   mutate(utdanning = fct_relevel(utdanning, "grunnskole")) %>%
-  mutate(inntekter = factor(inntekt, 
+  mutate(inntekter = factor(Inntekt, 
                             levels = c(2, 3, 4 ,5 ,6 ,7 ,8),
                             labels = c("150 001 - 300 000",
                                        "300 001 - 400 000",
@@ -256,17 +224,70 @@ data2 <- data2 %>%
                                        "600 001 - 700 000",
                                        "700 001 - 1 000 000",
                                        "Mer enn 1 000 000"))) %>%
-  mutate(inntekter = fct_relevel(inntekter, "150 001 - 300 000"))
+  mutate(inntekter = fct_relevel(inntekter, "150 001 - 300 000")) %>%
+  mutate(område = case_when(
+    geo_omr == 1 ~ 'storby',
+    geo_omr == 2 ~ 'storby',
+    geo_omr == 3 ~ 'mellomby',
+    #geo_omr == 4 ~ 'bygd',
+    #geo_omr == 5 ~ 'bygd',
+    TRUE ~ 'bygd'
+  )) %>%
+  mutate(område = factor(område, levels = c('bygd', 'mellomby', 'storby')))
+  
+```
+
+```{r}
+names(data2)
 ```
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE, error=FALSE}
 #leker oss med å se om reg fungerer
-reg3 <- lm(tiltak_utslippskutt ~ inntekter + utdanning, data = data2)
+reg3 <- lm(Tiltak_utslippskutt ~ inntekter + utdanning + område + Politisk_holdning, data = data2)
 
 summary(reg3)
 ```
 
+```{r}
+
+vif(reg3)
+```
+
 ## Teori
+
+Ny tekst
+
+Kuznet lanserte i 1955 sin teori om forholdet mellom utvikling i BNP per capita og inntektulikhet[@kuznets2022]. Han hevdet at sammenhengen fulgte en omvendt U-form slik at ulikhetene ville avta etter hvert som økonomien i et land vokste. I 1991 presenterte [@grossman1991] resultater som viste at denne modellen også kunne brukes om forholdet mellom BNP per cap og forurensning. I et lands økonomiske utvikling(målt i BNP) ville forurensningen være økende i begynnelsen for etter hvert å avta, og så etter hvert reduseres. Dette ble forklart med at i begynnelsen ble økonomisk vekst prioritert og miljøhensyn hadde ingen plass. Etter hvert som et lands økonomi vokste, ble miljøhensyn tvunget fram gjennom økt etterspørsel etter miljøvennlige varer og tjenester [@stern2004]. Denne teorien kalles miljø-Kuznets modellen.
+
+Denne teorien fikk så stor innflytelse at Verdensbanken i 1992 omfavnet den[@worldbank1992] og kommenterte den slik:
+
+Sitat: "standpunktet om at økende økonomisk aktivitet nødvendigvis vil skade miljøet er basert på statiske antakelser om teknologi, preferanser og miljøinvesteringer" ([@worldbank1992a]s. 38, egen oversettelse) og at "Etter hvert som inntektene øker, vil etterspørselen etter forbedret miljøkvalitet øke. Av samme grunn vil også tilgjengelige ressurser for investeringer øke" ([@worldbank1992a]s. 39, egen oversettelse).
+
+Miljø-Kuznets modellen har siden den gang vært anvendt på BNP per cap mot en rekke miljøvariabler med variabelt resultat, men mange av undersøkelsene har konkludert med at en slik sammenheng kan observeres. Vi viser til denne artikkelen som har en fyldig oversikt over arbeid knyttet til denne modellen([@stern2004a])
+
+Vi vil ta fram noen arbeid:
+
+[@andreoni2001] sier i sin artikkel at det kan være flere forklaringer på den omvendte U-formen på Miljø-Kuznets-kurven. For det første kan dette uttrykke en naturlig økonomisk utvikling med overgang fra et agarsamfunn til industriell produksjon og videre til mer miljøvennlig service- og tjenesteproduksjon. Dette kan være forårsaket av at miljøfiendlig produksjon flyttes til fattige utviklingsland. Hvis det er dette som gir den fallende del av kurven, vil ikke Miljø-Kuznets-kurven kunne være forklaringsmodell for alle land fordi de fattigste vil ikke ha noen land å eksportere sin forurensende produksjon. En annen forklaring er at forurensning kan sees på som en negativ eksternalitet ved produksjon. For å tvinge fram endring i retning av reduksjon av forurensning, trengs det sterke institusjoner og lovverk. Dette finner vi oftest og mer i industrialiserte rike land.
+
+[@mcconnell1997] sier at det er tre krefter som kan bidra til formen på Miljø-Kuznets-kurve. For det første kan det være sannsynlig at forurensningen reduseres når inntekten øker fordi etterspørselsmønsteret endrer seg. Med økende inntekt vil etterspørselen til husholdningene rette seg mer mot tjenester og dermed forurense mindre. For det andre vil handel kunne bidra gjennom større import av varer av forurensende produksjon. På den måten vil importlandet slippe forurensingen. Forfatterenes tredje poeng er at når inntektene øker, vil husholdningene etterspørre mer miljøkvalitet og forvente at myndighetene gjennom lov- og regelverk legger til rette for dette.
+
+**Undersøkelser som omfatter husholdninger**
+
+Alle disse undersøkelsene tar utgangspunkt i økonomisk utvikling i land, men det er også mange undersøkelser som ser på husholdsøkonomi og miljøeffekter. Da endres spørsmålet til om det er en sammenheng mellom enkeltmenneskenes økonomi og hvordan de forholder seg til miljøutfordringer. Med andre ord, vil preferansene hos enkeltmenneskene endre seg når inntekten endres?
+
+[@kahn1998] gjennomgår i sin undersøkelse forholdet mellom inntekt og utslipp av hydrokarboner fra biler på husholdningsnivå. Bilparken i lavinntektshusholdninger vil ofte omfatte relativt gamle biler som er dårlig vedlikeholdt med stort utslipp av klimagasser. I husholdninger med høyere inntekter vil bilene være nyere med teknologi som gir lavere utslipp. Det vil kanskje også være flere biler i slike husholdninger. Resultatene viser at forholdet kan beskrives ved en omvendt U-formet kurve, også kalt Miljø-Kuznets-kurve.
+
+[@karpinska] har undersøkt om utslipp av klimagasser som følge av energibruk endres med inntekten i polske husholdninger. De finner at Miljø-Kuznets-kurven dekker dette forholdet godt. For lave inntekter vil underforbruk av strøm og gass (fordi det er dyrt) og bruk av kull og ved gi høye utslipp. Med økende inntekt vil bruken av energikilder med lav klimagassutslipp øke, og boligene vil være bedre isolert.
+
+[@giovanis_environmental_2013] bruker paneldata fra the Britsh Household Survey fra 1991-2009 og ser på forholdet mellom tre mål på luftkvalitet( Oson, Svoveldioksyd, NOX) og person- og husholdsinntekt. De bruker flere ulike statistiske tilnærminger, men hovedkonklusjonen er at Miljø-Kuznets-teorien holder.
+
+[@roca2003] peker på at det er to hovedretninger i forklaringene av hvorfor forholdet mellom miljøkvalitet og inntekt framstår som en omvendt U-kurve. Den første foreslår at det er en endogen endring i etterspørselen etter varer og tjenester. Endringen består i dreining av etterspørselen mot varer og tjenester med lite miljøavtrykk, med tilsvarende endring over tid i strukturen i næringslivet. Samtidig er det viktig å analysere hva dette egentlig innebærer. Hvis et land importerer varer som er miljøvennlig i bruk, men som er produsert på en lite bærekraftig måte, er jo bare miljøutfordringene eksportert. Et eksempel her er økningen i antall elektriske biler som i seg selv er miljøvennlig tiltak, men der produksjonen av batteriene til bilene foregår på en meget forurensende måte . (Kilde)
+
+Den andre retningen har også individuelle preferanser og relativ etterspørsel etter varer og tjenester som basis. Men her skilles det mellom etterspørsel etter ordinære varer og tjenester og miljøkvalitet. Det antas at høy inntektselastisitet i etterspørselen etter miljøkvalitet og at det er dette som at økonomisk vekst kan vedvare samtidig som presset mot miljøet avtar.
+
+En annen innfallsvinkel finner vi hos [@nauges2021]. Hypotesen er at husholdninger i rike land er mindre bekymret for klimaendringer fordi rikdom skaper en buffer mot konsekvensene av endringene. Utvalget er en husholdningsundersøkelse som omfattet 11 OECD-land og over 10 000 husholdninger. De finner et statistisk signifikant negativt forhold mellom land- og husholdningsrikdom og individers oppfatning av alvoret i klimaendringer.
+
+# Modell
 
 Vi har valgt følgende uavhengig variabel:
 
@@ -279,8 +300,6 @@ Det spørres altså her om hvor viktig man synes det er at tiltakene gir utslipp
 Med basis i det teoretiske grunnlaget kan vi da si følgende:
 
 Hvis det er en miljø-kuznets-sammenheng mellom miljøholdninger og inntekt, vil vi kunne forvente at økende inntekt gir økende score på vår variabel. Inntil et visst inntektsnivå vil dette skje, deretter vil den falle. Vi kan tenke oss at veksten i scoren blir mindre og mindre av en marginal endring i inntekten. Årsaken er (hypotesen til nauges) at jo rikere individene er, jo mer tror de at rikdommen kan kjøpe dem fri for virkningene av klimagassutslippene. For veldig høye inntekter kan dette gi lavere miljøscore. Det kan også være at interessen for utslippskutt i Norge er dalende for de rikeste fordi de ikke er så opptatt av eget lands bidrag.
-
-# Modell
 
 ## Om modellen
 
@@ -406,47 +425,34 @@ Hvis $z<1$ vil $C^*$ være større enn i @eq-sol_C_opt og forurensingen vil vær
 
 # Metode og datagrunnlag
 
-I dette kapitlet skal vi gå gjennom metoden og datagrunnlaget som ligger i grunn for å gjøre vår analyse av forholdet mellom inntekt og holdninger til miljøtiltak. Det å forstå metoden er viktig for å kunne tolke resultatene på en meningsfull måte. Først introduserer vi regresjonsmodellen som vi skal anvende for undersøkelsen på hvordan ulike sosionomiske og demografiske faktorer påvirker individets miljøholdning, før en detajert beskrivelse av variablene vi har valgt til modellen, #inkludert deres operassjonalisering og forventede innflytelse på den avhengige variablen#. Videre vil vi dirkutere kilden til datagrunnlaget, representativiteten og de eventuelle begrensninger som kan påvirke analysen. Til sist vil vi redgjøre for de statistiske metodene som vi vil bruke for å sikre at funnene er robuste og pålitelige.
+I dette kapitlet skal vi gå gjennom metoden og datagrunnlaget som ligger i grunn for å gjøre vår analyse av forholdet mellom inntekt og holdninger til miljøtiltak. Det å forstå metoden er viktig for å kunne tolke resultatene på en meningsfull måte. Først introduserer vi regresjonsmodellen som vi skal anvende for undersøkelsen på hvordan ulike sosionomiske og demografiske faktorer påvirker individets miljøholdning, før en detajert beskrivelse av variablene vi har valgt til modellen, #inkludert deres operassjonalisering og forventede innflytelse på den avhengige variablen#. Videre vil vi dirkutere kilden til datagrunnlaget, representativiteten og de eventuelle begrensninger som kan påvirke analysen. Til sist vil vi redgjøre for de statistiske metodene som vi vil bruke for å sikre at funnene er robuste og pålitelige.(chat)
 
 Dette er regresjonsligningen vi tenker å bruke. I utgangspunktet vil vi se på forholdet mellom inntekt og holdning til tiltak som ikke skader norsk natur for deretter å legge til variabler for å se på om dette har noen innvirkning.
 
-Holdning til tiltak som reduserer klimautslipp = $$ \alpha_1inntekt + \alpha_2kjønn + \alpha_3alder + \alpha_4utdanning + \alpha_5geografi + \alpha_6 politiskholdning + \epsilon\ $$
+Holdning til tiltak som reduserer klimautslipp(Holdningtiltak) = $$ \alpha_1inntekt + \alpha_2kjønn + \alpha_3alder + \alpha_4utdanning + \alpha_5geografi + \alpha_6 politiskholdning + \epsilon_i\ $$
 
-som vil si at....
+Der $\alpha_i$ angir effekten hver variabel har på den avhengige variabelen Holdningtiltak, og $\epsilon_i$ er et restledd for all annen påvirkning.
 
 For å definere de variablene vi har valgt så har vi
 
 ```{r echo=FALSE}
 
-library(xtable)
-# Opprett dataene for tabellen
-Variabel <- c("Kjønn", "Alder", "Utdanning", "Geografi","Politisk holdning", "Inntekt")
-Forklaring <- c("Vi har to kjønn i datasettet. Kvinne = 0 og mann = 1.",
-                "Vi har alderen delt i ulike grupper som er 1959_og_før, 1960_1989, 1990_og_etter.",
-                "Vi har Utdanning i gruppe som grunnskole, videregående og høyere.",
-                "Vi har gruppevis inndeling i hvor individet bor, fylkevis og område hvor individet har svart om de bor alt ifra, i en storby til et spredsbygd strøk.",
-                "Vi har hvor individet vil plassere seg på en skala politisk at jo mer venstreorientert de er jo nærmere verdi 0 er de, og jo nærmere høyreorientert de er jo nærmere verdi 10.",
-                "Vi har individets bruttoinntekt som er definert i disse kategoriene: Under 150 000, 150 001 - 300 000, 300 001 - 400 000, 400 001 - 500 000, 500 001 - 600 000, 600 001 - 700 000, 700 001 - 1 000 000, Mer enn 1 000 000.")
-
-# Opprett den manuelle tabellen ved hjelp av data.frame()
-manuell_tabell <- data.frame(Variabel = Variabel, Forklaring = Forklaring)
-
-# Vis den manuelle tabellen
-
+#library(xtable)
+#library(kableExtra)
 
 ```
 
 ```{r echo=FALSE}
 
 # Opprett dataene for tabellen
-Variabel <- c("Kjønn", "Alder", "Utdanning", "Geografi","Politisk holdning", "Inntekt")
-Forklaring <- c("Vi har to kjønn i datasettet,Kvinne = 0 og mann = 1","Vi har alderen delt i ulike grupper som er 1959_og_før, 1960_1989, 1990_og_etter", " Vi har utdanning i gruppe som grunnskole,videregående og høyere","Vi har gruppevis inndeling i hvor individet bor, fylkevis og område hvor individet har svart om de bor alt ifra,i en storby til et spredsbygd strøk", "Vi har hvor individet vil plasere seg på en skala politisk at jo mer venstreorientert de er jo nærmere verdi 0 er de, og jo nærmere høyreorientert de er jo nærmere verdi 10","Vi har individets bruttoinntekt som er definert i disse kategoriene: Under 150 000,150 001 - 300 000,300 001 - 400 000,400 001 - 500 000,500 001 - 600 000,600 001 - 700 000,700 001 - 1 000 000,Mer enn 1 000 000")
+#Variabel <- c("Kjønn", "Alder", "Utdanning", "Geografi","Politisk holdning", "Inntekt")
+#Forklaring <- c("Vi har to kjønn i datasettet,Kvinne = 0 og mann = 1","Vi har alderen delt i ulike grupper som er 1959_og_før, 1960_1989, 1990_og_etter", " Vi har utdanning i gruppe som grunnskole,videregående og høyere","Vi har gruppevis inndeling i hvor individet bor, fylkevis og område hvor individet har svart om de bor alt ifra,i en storby til et spredsbygd strøk", "Vi har hvor individet vil plasere seg på en skala politisk at jo mer venstreorientert de er jo nærmere verdi 0 er de, og jo nærmere høyreorientert de er jo nærmere verdi 10","Vi har individets bruttoinntekt som er definert i disse kategoriene: Under 150 000,150 001 - 300 000,300 001 - 400 000,400 001 - 500 000,500 001 - 600 000,600 001 - 700 000,700 001 - 1 000 000,Mer enn 1 000 000")
 
 # Opprett den manuelle tabellen ved hjelp av data.frame()
-manuell_tabell <- data.frame(Variabel = Variabel, Forklaring = Forklaring)
+#manuell_tabell <- data.frame(Variabel = Variabel, Forklaring = Forklaring)
 
 # Vis den manuelle tabellen
-knitr::kable(manuell_tabell, format = "markdown")
+#knitr::kable(manuell_tabell, format = "markdown") %>% column_spec(1,width = "5cm")
 
 
 ```
@@ -460,37 +466,22 @@ I tabell... ser vi verdiene på de forskjellige variablene samt min og max.....
 ```{r echo=FALSE, warning=FALSE, error=FALSE}
 
 #options(scipen = 999)
-#library(psych)
+library(psych)
 #library(kableExtra)
 
-#table_1 <-round(describe(data2[,c('geo_omr', 'kjønn','landsdel', 'fylke', 'fødselsår_1','fødselsår_2'
- #                                 ,'h_utd_1', 'tiltak_utslippskutt', 'tiltak_teknologi_kutt'
-  #                                ,'inntekt','klimaendringer','politisk_holdning')], fast=TRUE),2)
+table_1 <-round(describe(data2[,c('Fødselsår_periode','Fødselsår_tiår'
+                                  ,'Utdanning', 'Tiltak_utslippskutt'
+                                  ,'Inntekt','Politisk_holdning')], fast=TRUE),2)
 
-#table_1 <- as.data.frame(table_1)
-
-#rownames(table_des)<-c("Gjennomsnittlig antall år i skole (avg_educ)", "Gjennomsnittlig årlig vekstrate i arbeidskraften (%) (avg_n)","Gjennomsnittlig årlig befolkningsvekst (%) (avg_p)","Gjennomsnittlig sparing for perioden 2000-2015 (%) (avg_nsy)","Gjennomsnittlig årlig vekstrate (negativ) i naturressurser (%) (avg_nry)","Gjennomsnittlig årlig vekstrate i investeringer (%) (avg_gi)","log BNP per innbygger i 2000 (ln_gdppc0)","Gjennomsnittlig årlig vekstrate i eksport (%) (avg_gx)","log BNP per innbygger i 2019 (ln_gdppc)","Gjennomsnittlig årlig vekstrate i BNP pc 2000-2019 (%) (avg_gdpgrowth)")
+table_1 <- as.data.frame(table_1)
 
 
 
-#knitr::kable(table_1[,2:6], caption = "Deskriptiv statistikk", col.names = c("N", "Gj.snitt","Standardavvik","Min", "Maks")) %>% column_spec(1,width = "5cm") %>% kable_styling(bootstrap_options = c("striped")) 
+#knitr::kable(table_1[,2:6], format = "latex", caption = "Deskriptiv statistikk", col.names = c("N", "Gj.snitt","Standardavvik","Min", "Maks")) %>% column_spec(1,width = "5cm") %>% kable_styling(bootstrap_options = c("striped")) 
 
 ```
 
 For å forklare de forskjellige variablenes verdi fra tabellen er
-
-```{r echo=FALSE}
-count_datainntekt <- count(data2, inntekter)
-
-# Lag et stolpediagram
-ggplot(count_datainntekt, aes(x = inntekter, y = n)) +
-  geom_bar(stat = "identity", fill = "purple") +
-  geom_text(aes(label = n), vjust = -0.5, size = 3.5) + 
-  labs(title = "Antall forekomster av hver verdi i kolonnen 'inntekt'",
-       x = "Verdi",
-       y = "Antall") +
-  theme_minimal()
-```
 
 ```{r echo=FALSE}
 # Beregner prosentandelen av totalen
@@ -501,31 +492,12 @@ count_datainntekt$prosentandel <- count_datainntekt$n / sum(count_datainntekt$n)
 ggplot(count_datainntekt, aes(x = inntekter, y = prosentandel)) +
   geom_bar(stat = "identity", fill = "purple") +
   geom_text(aes(label = paste0(round(prosentandel, 1), "%")), vjust = -0.5, size = 3.5) + 
-  labs(title = "Prosentandel av hver verdi i kolonnen 'inntekt'",
-       x = "Verdi",
-       y = "Prosentandel") +
+  labs(title = "Inntekten fordelt på inntektsgruppene i prosent",
+       x = "Inntektsgruppe",
+       y = "Andel") +
   theme_minimal() +
   coord_flip()
 
-```
-
-```{r echo=FALSE, warning=FALSE, message=FALSE, error=FALSE}
-
-#options(scipen = 999)
-#library(psych)
-#library(kableExtra)
-#table_des<-round(describe(df_growth2019[,c('avg_educ','avg_n','avg_p','avg_nsy','avg_nry',
- #                                          'avg_gi','ln_gdppc0','avg_gx','ln_gdppc',
-  #                                         'avg_gdpgrowth'
-   #                     )], fast=TRUE),2)
-#table_des<- as.data.frame(table_des)
-#rownames(table_des)<-c("Gjennomsnittlig antall år i skole (avg_educ)", "Gjennomsnittlig årlig vekstrate i arbeidskraften (%) (avg_n)","Gjennomsnittlig årlig befolkningsvekst (%) (avg_p)","Gjennomsnittlig sparing for perioden 2000-2015 (%) (avg_nsy)","Gjennomsnittlig årlig vekstrate (negativ) i naturressurser (%) (avg_nry)","Gjennomsnittlig årlig vekstrate i investeringer (%) (avg_gi)","log BNP per innbygger i 2000 (ln_gdppc0)","Gjennomsnittlig årlig vekstrate i eksport (%) (avg_gx)","log BNP per innbygger i 2019 (ln_gdppc)","Gjennomsnittlig årlig vekstrate i BNP pc 2000-2019 (%) (avg_gdpgrowth)")
-
-
-
-#knitr::kable(table_des[,2:6], caption = "Deskriptiv statistikk", col.names = c("N", "Gj.snitt","Standardavvik","Min", "Maks")) %>%
-#  column_spec(1,width = "5cm") %>% 
-#  kable_styling(bootstrap_options = c("striped")) 
 ```
 
 ```{=tex}
@@ -594,4 +566,4 @@ coord_flip()
 
 Dette vil flippe aksen, slik at stolpene blir horisontale istedenfor vertikale. Jeg justerte også **`hjust`**-parameteren i **`geom_text()`** for å justere teksten riktig i det horisontale formatet.
 
-Vi har merket i kodene på de delene vi har brukt fra KI og lagt inn i vår egen kode, med \# (OpenAI, 2024)
+Vi har merket i kodene på de delene vi har brukt fra KI og lagt inn i vår egen kode, med \# (OpenAI, 2024) k
