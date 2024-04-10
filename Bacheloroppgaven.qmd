@@ -3,6 +3,10 @@ format:
     pdf:    
       include-before-body:       
         - title.tex
+        - \usepackage{fancyhdr}
+        - \pagestyle{fancy}
+        - \fancyhf{}
+        - \fancyfoot[C]{\thepage}
       include-in-header:        
        text: |        
         \usepackage{graphicx}        
@@ -61,7 +65,8 @@ rm(list = ls())
 library(tidyverse)
 library(car)
 library(latticeExtra)
-#library(knitr)
+library(knitr)
+library(rmarkdown)
 
 
 #setter inn for at en kan bruke norske bokstaver(særslikt for maskinen denne filen er laget på)
@@ -82,7 +87,7 @@ NSD3127 <- read_csv("Norsk medborgerpanel runde 26, 2023/NSD3127.csv")
 # de med # har vært alternativer vi har sett på mens man har utforsket datasettet for hva man kunne bruke og for hva som hang sammen og hadde verdier i samme rad(gjelder den i midten her som er # ut da den bare ikke virker mer av en eller annen grunn)
 
 #trekker ut de variablene vi skal bruke til et eget datasett
-runde_26 <- NSD3127[, c("r26k2_bgurb", "r26P1", "r26P2", "r26P3", "r26P5_1","r26P4_2", "r26P5_2", "r26P4_1", "r26k2_cemes_e", "r26k2_cemes_g", "r26k2_cemes_j", "r26k2_bginc", "r26k2_pcwcc", "r26k2_bglrs")]
+runde_26 <- NSD3127[, c("r26k2_bgurb", "r26P1","r26P4_2", "r26P5_2", "r26P4_1", "r26k2_cemes_e", "r26k2_cemes_g", "r26k2_bginc", "r26k2_pcwcc", "r26k2_bglrs")]
 
 
 #runde_26 <- NSD3127 %>% select(#r26_bgciv,
@@ -118,9 +123,9 @@ runde_26 <- runde_26 %>% rename(#sivilstatus = r26_bgciv,
          geo_omr = r26k2_bgurb, 
          #barn = r26k2_bgchi,
          kjønn =r26P1,
-         landsdel =r26P2, 
-         fylke =r26P3,
-         Fødselsår_tiår =r26P5_1,
+         #landsdel =r26P2, 
+         #fylke =r26P3,
+         #Fødselsår_tiår =r26P5_1,
          Fødselsår_periode = r26P5_2, 
          Utdanning = r26P4_1, 
          h_utd_2 = r26P4_2,
@@ -162,6 +167,8 @@ data1 <- runde_26[complete.cases(runde_26$Tiltak_utslippskutt), ]
 #så fjerne alle som har inntekt under 150 000(grunn står i dokumentet)
 data2 <- data1[complete.cases(data1$Inntekt) & data1$Inntekt != 1, ]
 
+# Fjern rader med NA-verdier som kan forstyrre resultatene
+data2 <- na.omit(data2)
 ```
 
 ```{r echo=FALSE, fig.width=6, fig.height=4}
@@ -247,29 +254,17 @@ data2 <- data2 %>%
    mutate(område = factor(geo_omr, 
                             levels = c(1, 2, 3, 4, 5),
                             labels = c("storby", "storby", "mellomby", "bygd", "bygd"))) %>%
-  mutate(område = fct_relevel(utdanning, "bygd"))
+  mutate(område = fct_relevel(område, "bygd"))
 
-#så legger vi den andre født delen i 6 kategorier, hvor de to med verdi 1 og 2 slås sammen
-data2 <- data2 %>%
-  mutate(fødttiår = case_when(
-    Fødselsår_tiår == 1 ~ '1949_og_før',
-    Fødselsår_tiår == 2 ~ '1949_og_før',
-    Fødselsår_tiår == 3 ~ '1950_1959',
-    Fødselsår_tiår == 4 ~ '1960_1969',
-    Fødselsår_tiår == 5 ~ '1970_1979',
-    Fødselsår_tiår == 6 ~ '1980_1989',
-    TRUE ~ '1990_og_etter'
-  )) %>%
-  mutate(fødttiår = factor(fødttiår, levels = c('1949_og_før','1950_1959', '1960_1969','1970_1979','1980_1989', '1990_og_etter')))
 
 #legger så hvor man er på skalaen politisk
 
 data2 <- data2 %>%
   mutate(politiskholdning = case_when(
     Politisk_holdning == 0 ~ 'Venstre',
-    Politisk_holdning == 1 ~ 'venstre',
-    Politisk_holdning == 2 ~ 'venstre',
-    Politisk_holdning == 3 ~ 'venstre',
+    Politisk_holdning == 1 ~ 'Venstre',
+    Politisk_holdning == 2 ~ 'Venstre',
+    Politisk_holdning == 3 ~ 'Venstre',
     Politisk_holdning == 4 ~ 'Midtpå',
     Politisk_holdning == 5 ~ 'Midtpå',
     Politisk_holdning == 6 ~ 'Midtpå',
@@ -279,7 +274,7 @@ data2 <- data2 %>%
     Politisk_holdning == 10 ~ 'Høyre',
     TRUE ~ 'Høyre'
   )) %>%
-  mutate(politiskholdning = factor(politiskholdning, levels = c('venstre', 'Midtpå', 'Høyre')))
+  mutate(politiskholdning = factor(politiskholdning, levels = c('Venstre', 'Midtpå', 'Høyre')))
 
   
 ```
@@ -511,7 +506,7 @@ I tabell... ser vi verdiene på de forskjellige variablene samt min og max.....
 ```{r}
 
 #lager datasettet med det vi kun skal bruke for regresjonen
-data3 <- data2[, c("mann", "fødttiår", "fødtperiode", "utdanning", "inntekter","område", "politiskholdning", "Tiltak_utslippskutt")]
+data3 <- data2[, c("mann", "fødtperiode", "utdanning", "inntekter","område", "politiskholdning", "Tiltak_utslippskutt")]
 
 ```
 
@@ -521,7 +516,7 @@ data3 <- data2[, c("mann", "fødttiår", "fødtperiode", "utdanning", "inntekter
 library(psych)
 library(kableExtra)
 
-table_1 <-round(describe(data2[,c('Inntekt','Utdanning','Fødselsår_tiår','Fødselsår_periode','Politisk_holdning')], fast=TRUE),2)
+table_1 <-round(describe(data2[,c('Inntekt','Utdanning','Fødselsår_periode','geo_omr','Politisk_holdning')], fast=TRUE),2)
 
 table_1 <- as.data.frame(table_1)
 
@@ -549,12 +544,11 @@ Modelloversikt<- data.frame(col1,col2,col3,col4,col5,col6,col7)
 ```
 
 ```{r}
-Modelloversikt_tbl<-as.data.frame(Modelloversikt)
-#| label: Modeloversikt
+#Modelloversikt_tbl<-as.data.frame(Modelloversikt)
 
-knitr::kable(Modelloversikt_tbl, caption = "Oversikt over regresjonsmodellene", col.names = c("Modellnavn" ,"Variabelnavn", "Variabelnavn","Variabelnavn","Variabelnavn","Variabelnavn","Variabelnavn")) %>%
-  column_spec(1,width = "3cm") %>% 
-  kable_styling(bootstrap_options = c("striped"))
+#knitr::kable(Modelloversikt_tbl, caption = "Oversikt over regresjonsmodellene", col.names = c("Modellnavn" ,"Variabelnavn", "Variabelnavn","Variabelnavn","Variabelnavn","Variabelnavn","Variabelnavn")) %>%
+#  column_spec(1,width = "3cm") %>% 
+#  kable_styling(bootstrap_options = c("striped"))
 ```
 
 ```{r echo=FALSE}
@@ -710,13 +704,14 @@ Denne testen sjekker om det er noen lineær sammenheng mellom to variabler.
 
 ```{r}
 
-vif(Modell_6)
+#vif(Modell_6)
 ```
 
 Vi ser at VI-verdiene er i nærheten av 1 alle sammen noe som indikerer at det ikke er noen lineært forhold mellom variablene.
 
 ```{r}
 library(jtools)
+library(broom.mixed)
 fit<-Modell_6
 summ(fit)
 
@@ -729,6 +724,64 @@ plot_summs(fit)
 ```
 
 # Diskusjon og konklusjon
+
+```{r}
+
+#regner om til prosentandel of plott i forhold til kvinner og menn
+count_datamann <- count(data2, kjønn)
+count_datamann$prosentandel <- count_datamann$n / sum(count_datamann$n) * 100
+
+# Lager et stolpediagram med prosentandelen på hver stolpe
+ggplot(count_datamann, aes(x = kjønn , y = prosentandel)) +
+  geom_bar(stat = "identity", fill = "chartreuse4") +
+  geom_text(aes(label = paste0(round(prosentandel, 1), "%")), vjust = -0.5, size = 3.5) + 
+  labs(title = " Fordelt på kjønn",
+       x = "Kjønn",
+       y = "Andel") +
+  theme_minimal()
+
+#teller opp andelen med antall
+countdame <- count(data2,kjønn)
+print(countdame)
+```
+
+```{r}
+#regner om til prosentandel of plott i forhold til utdanning
+count_datautdanning <- count(data2, utdanning)
+count_datautdanning$prosentandel <- count_datautdanning$n / sum(count_datautdanning$n) * 100
+
+# Lager et stolpediagram med prosentandelen på hver stolpe
+ggplot(count_datautdanning, aes(x = utdanning , y = prosentandel)) +
+  geom_bar(stat = "identity", fill = "chartreuse4") +
+  geom_text(aes(label = paste0(round(prosentandel, 1), "%")), vjust = -0.5, size = 3.5) + 
+  labs(title = " Fordelt på utdanning",
+       x = "Utdanning",
+       y = "Andel") +
+  theme_minimal()
+
+#teller opp andelen med antall
+countutd <- count(data2,utdanning)
+print(countutd)
+```
+
+```{r}
+#regner om til prosentandel of plott i forhold til bostedsområde
+count_dataområde <- count(data2, område)
+count_dataområde$prosentandel <- count_dataområde$n / sum(count_dataområde$n) * 100
+
+# Lager et stolpediagram med prosentandelen på hver stolpe
+ggplot(count_dataområde, aes(x = område , y = prosentandel)) +
+  geom_bar(stat = "identity", fill = "chartreuse4") +
+  geom_text(aes(label = paste0(round(prosentandel, 1), "%")), vjust = -0.5, size = 3.5) + 
+  labs(title = " Fordelt på bostedsområde",
+       x = "Bosted",
+       y = "Andel") +
+  theme_minimal()
+
+#teller opp andelen med antall
+countomr <- count(data2,område)
+print(countomr)
+```
 
 # Referanser
 
