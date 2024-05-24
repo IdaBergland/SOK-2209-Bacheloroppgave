@@ -1,0 +1,1300 @@
+---
+format:   
+    pdf:    
+      include-before-body:       
+        - title.tex     
+      include-in-header:        
+       text: |        
+        \usepackage{graphicx} 
+        \usepackage{fancyhdr}         
+        \usepackage{sectsty}        
+        \usepackage{titlesec}        
+        \usepackage{tocloft}        
+        \usepackage{setspace}         
+        %\usepackage[style=apa]{biblatex}         
+        %\addbibresource{bachelor.bib}
+        \pagestyle{fancy} 
+        \fancyhf{} 
+        \fancyfoot[C]{\thepage}
+        \addtokomafont{disposition}{\rmfamily}
+        \usepackage{times}
+        \usepackage{hyperref}
+        \setstretch{1.5}
+        \fancyhead[R]{\leftmark}
+        \renewcommand{\headrulewidth}{0.4pt}
+        \renewcommand{\footrulewidth}{0pt}
+        \renewcommand{\familydefault}{\rmdefault}
+      keep-tex: true     
+      toc: true 
+      toc-title: "Innhold"    
+      toc-depth: 3     
+      number-sections: false   
+      number-depth: 3     
+      geometry: "left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm"     
+      fontsize: 12pt     
+      colorlinks: true    
+      bibliography: bachelor.bib     
+      bibliographystyle: apa.cls
+      include-after-body:
+      - text: |
+          \listoffigures
+          \listoftables
+language: "norsk.yml"
+execute: 
+  echo: false
+editor: 
+  markdown: 
+    wrap: sentence
+---
+
+\newpage
+
+# Forord
+
+Vi vil takke Mikko Moilanen for strålende veiledning og interessante samtaler på kontoret.
+
+\newpage
+
+# Sammendrag
+
+Problemstillingen i denne bacheloroppgaven er om det er en sammenheng mellom inntekt og holdninger til klimagasstiltak som gir utslippskutt i Norge?
+
+For å finne ut mer om dette har vi brukt datamateriale fra en undersøkelse kalt Norsk medborgerpanel runde 26 og anvendt disse i ulike regresjonsmodeller.
+Vi har brukt utdanning, kjønn og alder som kontrollvariabler.
+
+Vi har tatt utgangspunkt i teorien om Miljø-Kutnez kurven som går ut på at det er et omvendt U-forhold mellom inntekt og forurensning i et samfunn slik at når inntekten er over et visst nivå vil forurensningen avta.
+
+Vi har funnet følgende resultater:
+
+-   Inntekt har signifikant negativ betydning for miljøholdninger når den er over 700 000
+
+-   Høyere utdanning øker de positive miljøholdningene
+
+-   Kvinner har mer positive miljøholdninger enn menn
+
+-   I noen aldersgrupper er de positive miljøholdningene høyere enn i andre
+
+\newpage
+
+```{r}
+#| label: henter pakker
+#| echo: FALSE 
+#| warning: FALSE
+#| message: FALSE
+#| error: FALSE
+#| include: FALSE
+
+#tømmer enviroment
+rm(list = ls())
+
+#starter med nødvendige pakker
+
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(car))
+suppressPackageStartupMessages(library(latticeExtra))
+suppressPackageStartupMessages(library(mosaic))
+suppressPackageStartupMessages(library(mosaicData))
+suppressPackageStartupMessages(library(statisticalModeling))
+suppressPackageStartupMessages(library(rpart))
+suppressPackageStartupMessages(library(rpart.plot))
+suppressPackageStartupMessages(library(infer))
+suppressPackageStartupMessages(library(broom))
+suppressPackageStartupMessages(library(moderndive))
+suppressPackageStartupMessages(library(plot3D))
+suppressPackageStartupMessages(library(magrittr))
+suppressPackageStartupMessages(library(mosaic))
+suppressPackageStartupMessages(library(rgl))
+suppressPackageStartupMessages(library(knitr))
+suppressPackageStartupMessages(library(psych))
+suppressPackageStartupMessages(library(kableExtra))
+suppressPackageStartupMessages(library(pander)) 
+suppressPackageStartupMessages(library(gtsummary))
+suppressPackageStartupMessages(library(summarytools))
+suppressPackageStartupMessages(library(skimr))
+suppressPackageStartupMessages(library(jtools))
+suppressPackageStartupMessages(library(stargazer))
+suppressPackageStartupMessages(library(texreg))
+knitr::opts_chunk$set(fig.pos = "H")
+#setter inn for at en kan bruke norske bokstaver(særslikt for maskinen denne filen er laget på)
+Sys.setlocale(locale ="no_NO")
+
+```
+
+```{r}
+#| label: uthenting data
+#| echo: false
+#| warning: false 
+#| message: false
+#| error: false
+
+#leser inn fila
+NSD3127 <- read_csv("~/Studier/2209 Bachelor/Norsk medborgerpanel runde 26, 2023/NSD3127.csv")
+
+#Lager datasett med de variablene vi skal bruke og kaller denne for runde_26.
+
+# de med # har vært alternativer vi har sett på mens man har utforsket datasettet for hva man kunne bruke og for hva som hang sammen og hadde verdier i samme rad(gjelder den i midten her som er # ut da den bare ikke virker mer av en eller annen grunn)
+
+#trekker ut de variablene vi skal bruke til et eget datasett
+runde_26 <- NSD3127[, c("r26k2_bgurb", "r26P1","r26P4_2", "r26P5_2", "r26P4_1", "r26k2_cemes_e", "r26k2_cemes_g", "r26k2_bginc", "r26k2_pcwcc", "r26k2_bglrs","r26k2_cemes_d","r26k2_cemes_a", "r26k2_cemes_b","r26k2_cemes_c", "r26k2_cemes_f", "r26k2_cemes_h", "r26k2_cemes_i", "r26k2_cemes_j")]
+
+
+#endrer så videre navnene på variablene vi skal bruke
+runde_26 <- runde_26 %>% rename(geo_omr = r26k2_bgurb, 
+         kjønn =r26P1,
+         Fødselsår = r26P5_2, 
+         Utdanning = r26P4_1, 
+         tiltak_kostnadseff = r26k2_cemes_a,
+         tiltak_støtte = r26k2_cemes_b,
+         tiltak_ikke_skade_okonomi = r26k2_cemes_c,
+         tiltak_arbeidspl = r26k2_cemes_d,
+         Miljøholdning = r26k2_cemes_e, 
+         tiltak_globalt_ansvar = r26k2_cemes_f,
+         tiltak_teknologi_kutt = r26k2_cemes_g,
+         tiltaket_ekspert = r26k2_cemes_h,
+         tiltak_forskjeller = r26k2_cemes_i,
+         tiltak_norsk_natur = r26k2_cemes_j,
+         #tillit_storting = r26_pccos,
+         #tillit_politikere = r26_pccop,
+         #tillit_andre = r26_pccoo,
+         #st_valg_parti = r26k2_pcpar,
+         Inntekt = r26k2_bginc,
+         klimaendringer = r26k2_pcwcc,
+         Politisk_holdning = r26k2_bglrs)
+
+```
+
+```{r Endrer 97 og 98 til NA}
+#| echo: false
+#| warning: false 
+#| label: rydder_na
+#| message: false
+#| error: false
+
+
+# Endrer alle verdier med 97 og 98 til NA for at ikke alle radene skal bli borte ved filtrering.
+
+#velger/lager de verdiene som skal bort
+spes_verdier <- c(97, 98)
+
+# Loop gjennom kolonnene og erstatt  verdiene 97 og 98 med NA
+for (col in colnames(runde_26)) {
+  runde_26[[col]][runde_26[[col]] %in% spes_verdier] <- NA
+}
+
+#rydde data og fjerne alle radene som ikke har verdi i tiltak-utslippskutt
+data1 <- runde_26[complete.cases(runde_26$Miljøholdning), ]
+
+# Fjern rader med NA-verdier som kan forstyrre resultatene
+data1 <- na.omit(data1)
+```
+
+```{r}
+#| label: til_faktorer
+#| echo: false
+#| warning: false 
+#| message: false
+#| error: false
+
+
+# her lager vi om til alle faktorer og dummyvariabler som vi skal bruke i regresjonen 
+
+# inntekter fordeles i faktorer på forskjellige nivå
+data2 <- data1 %>%
+  mutate(inntekter = factor(Inntekt, 
+                            levels = c(1,2, 3, 4 ,5 ,6 ,7 ,8),
+                            labels = c("0 - 300 000",
+                                       "0 - 300 000",
+                                       "300 001 - 500 000",
+                                       "300 001 - 500 000",
+                                       "500 001 - 700 000",
+                                       "500 001 - 700 000",
+                                       "700 001 - 1 000 000",
+                                       "Mer enn 1 000 000"))) %>%
+  mutate(inntekter = fct_relevel(inntekter, "0 - 300 000"))
+
+#utdanning i 3 kategorier
+data2 <- data2 %>%
+   mutate(utdanning = factor(Utdanning, 
+                            levels = c(1, 2, 3),
+                            labels = c("grunnskole", "videregående", "høyere"))) %>%
+  mutate(utdanning = fct_relevel(utdanning, "grunnskole"))
+
+
+# Kjønnsdummy (1 for mann, 0 for kvinne)
+data2$Kjonn <- ifelse(data2$kjønn == 1, 1, 0)
+
+#fødelsår i 3 perioder
+data2 <- data2 %>%
+  mutate(Aldersgruppe = case_when(
+    Fødselsår == 1 ~ '1959_og_før',
+    Fødselsår == 2 ~ '1960_1989',
+    Fødselsår == 3 ~ '1990_og_etter'
+  ))  %>% 
+  mutate(Aldersgruppe = fct_relevel(Aldersgruppe, "1959_og_før"))
+
+data2 <- data2 %>%
+   mutate(Kjønn = factor(kjønn,
+                            levels = c(1, 2),
+                            labels = c("Mann", "Kvinne")))
+
+```
+
+# 1 Innledning
+
+Bærekraft, miljø og tiltak for å redusere utslipp for klima er et tema som er stadig mer presserende og sentralt i dagens samfunnsdiskusjoner, og det er tydelig at det trengs både kollektive og individuelle tiltak for å møte disse miljøutfordringene.
+Det planlegges og gjennomføres mange tiltak som berører nærmiljø og som gjør at enkeltmennesker må endre sin atferd i forskjellig grad, men det er også tiltak som man som enkeltmennesker ikke merker så mye til.
+
+Det er viktig å anerkjenne at noen tiltak har bred støtte blant befolkningen, mens andre ikke har like bred støtte.
+For at tiltak skal være vellykket og for så vidt være gjennomførbare, er politikere og beslutningstakere gjerne avhengige av at de har folket med seg til en viss grad.
+Noen tiltak møter stor motstand, især hvis det går ut over enkeltmenneskene selv og deres personlige økonomi.
+Politikere og beslutningstakerne havner i en utfordrende posisjon og må balansere kravet om hensyn til miljø og individuelle interesser og velstanden til befolkningen.
+Det skaper en oppfatning om at man oppfatter miljøvern som luksus for privilegerte, mens de med lavere inntekt ser på det som en byrde de ikke har råd til.
+
+I en undersøkelse kalt Norsk medborgerpanel runde 26 [@ivarsflatenelisabethetal.a] har deltagere blitt spurt om hvor viktig det er med tiltak som reduserer utslippskutt i Norge, og etter hva man kan se av figur 1, er det mange medborgere som synes dette er viktig.
+Over 40 % av de spurte sier at på en skala fra 0 til 10 som måler viktighet, vil de si 7 eller mer.
+
+```{r}
+#| echo: false
+#| warning: false 
+#| message: false
+#| fig-width: 6
+#| fig-height: 4
+#| label: fig-miljøholdning
+#| fig-cap: "Miljøholdning"
+
+# teller opp og regner om til prosentandeler
+count_datatiltak <- count(data2, Miljøholdning)
+count_datatiltak$prosentandel <- count_datatiltak$n / sum(count_datatiltak$n) * 100
+
+# Lager et stolpediagram med prosentandelen på hver stolpe
+ggplot(count_datatiltak, aes(x = Miljøholdning , y = prosentandel)) +
+  geom_bar(stat = "identity", fill = "chartreuse4") +
+  geom_text(aes(label = paste0(round(prosentandel, 1), "%")), vjust = -0.5, size = 3) + 
+  labs(title = "Miljøholdninger i Norge?",
+       subtitle = "Fordeling av svar på skala 0-10 der 10 er viktigst",
+       x = "Viktighet på skala",
+       y = "Andel",
+       caption= "Kilde:Norsk Medborgerpanel 2023, runde 26") +
+  scale_x_continuous(breaks = seq(min(count_datatiltak$Miljøholdning), max(count_datatiltak$Miljøholdning), by = 1)) +
+   theme(plot.title=element_text(size=8),
+        axis.title.x =element_text(size=5),
+         axis.title.y =element_text(size=5))+
+  theme_minimal()
+```
+
+Vi finner det interessant at mange mener dette er viktig, selv om det kan gå på bekostning av ens egne vaner og økonomi.
+Mange diskusjoner kommer opp når det kommer til konkrete tiltak.
+Eksempler på dette er diskusjonene i media da det ble tale om å innføre av bompenger i Tromsø , eller planer om utbygging av vindmølleparker som klimagassreduserende tiltak.
+
+La oss anta at de positive miljøholdningene faktisk kommer til uttrykk ved at klimagassutslippene reduseres jo større grad av positiv holdning som individene uttrykker.
+Denne antakelsen kan begrunnes med at en positiv miljøholdning gjør at enkeltmenneskene gjør valg som etter hvert medfører reduksjon i klimagassutslipp.
+Det kan for eksempel være valg av el-bil, søppelsortering og økologiske matvarer.
+I tillegg må myndighetene ha politisk aksept for å gjennomføre slike restriktive miljøtiltak, og positive miljøholdninger i befolkningen vil være en faktor i beslutningsprosessen.
+Klimagassutslipp er den største forurensningskilden i verden og vi velger derfor å bruke begrepet forurensning.
+Gitt denne antakelsen vil derfor vår oppgave være å undersøke hvilken sammenheng det er mellom inntekt og forurensning.
+
+Vi vil i denne bacheloroppgaven se nærmere på om det finnes noen sammenheng mellom inntekt og holdningen til klimagassreduserende tiltak i Norge med utgangspunkt i dataene fra Norsk medborgerpanel runde 26.
+Resonnementet er at det koster å være miljøbevisst og at med økende inntekt vil folk derfor være mer positiv til tiltak som påvirker adferd og personlig økonomi enn de med lavere inntekter.
+
+Vår problemstilling er:
+
+Er det en sammenheng mellom inntekt og holdninger til klimagasstiltak som gir utslippskutt i Norge?
+
+I kapittel 2 presenterer vi teorien om Miljø-Kutnez kurven som går ut på at det er et omvendt U-forhold mellom inntekt og forurensning i et samfunn slik at når inntekten er over et visst nivå vil forurensningen avta.
+Vi går også gjennom forskning på lignende problemstillinger med basis i denne teorien.
+
+I kapittel 3 går vi gjennom datagrunnlaget og presenterer variablene vi skal bruke.
+Vi illustrerer også noen sammenhenger fra data.
+Vi presenterer OLS-metoden og forutsetninger for den.
+Til slutt i kapittelet viser vi regresjonsmodellene vi skal bruke.
+
+I kapittel 4 vil vi gjennomgå og tolke resultatene av den empiriske analysen .
+
+Kapittel 5 inneholder drøfting av resultatene og konkludere.
+
+I Appendiks tar vi med testene av forutsetningene for OLS, utledningen av Environmental Kuznets Curve(EKC) samt oversikt over variablene.
+
+\newpage
+
+# 2 Teori
+
+Vi vil i dette kapitlet ta for oss nytteteori som er anvendbar for vår problemstilling om hvorvidt det er en sammenheng mellom inntekt og miljøholdninger.
+Vi ønsker å se nærmere på hvordan konsum og miljøinnsats påvirker nivået på forurensning og forbrukerens nytte i en økonomisk sammenheng når inntekten øker.
+
+I 1991 presenterte Grossman og Krueger [@grossman1991]resultater som viste at forholdet mellom BNP per cap og forurensning fulgte en omvendt U-form[^1].
+Undersøkelsen var basert på virkninger av etableringen av frihandelsavtale i Nord-Amerika.
+  Dette fenomenet kan man i følge [@andreoni2001]begrunne med at i den økonomiske utviklingen i et land følger i begynnelsen økende forurensningsproblemer inntil et visst punkt.
+Etter det, vil deler av produksjonen også omfatte forurensningsreduserende produksjon og eksisterende produksjon blir mer miljøvennlig.
+Dette vil føre til at forurensingen reduseres.
+Et annen forklaring er at med økende inntekt vil menneskene ha høyere preferanser for økte miljø-standarder[@dinda2004].
+Denne sammenhengen har fått navnet Environmental Kuznet Curve(EKC).
+
+[^1]: Denne modellen var en videreutvikling av en modell som Kuznet lanserte i 1955 anvendt på sammenhengen mellom BNP per cap og inntektsulikhet.
+
+Vi vil starte med å definere en nyttefunksjon og hvordan den brukes til å modellere forbrukerens preferanser[@andreoni2001a].
+Vi vil deretter presentere den økonomiske modellen der forbrukerens valg av konsum og miljøinnsats maksimerer nytten.
+Sentralt i denne modellen er forholdet mellom konsum (C) og miljøinnsats (E) og tilhørende parametre, henholdsvis $\alpha$ og $\beta$.
+Vi utleder til slutt et uttrykk for forurensning P som funksjon av inntekten M.
+
+Vi vil videre undersøke hvordan endringer i parameterne $\alpha$ og $\beta$ påvirker forurensningsnivået (P), forbrukerens nytte (U) og miljøinnsats(E).
+Vi vil se på ulike scenarier der $\alpha$ og $\beta$ varierer, og vurdere konsekvensene for miljøpåvirkningen og forbrukerens velferd.
+Spesielt vil vi se på tilfeller der summen av $\alpha$ og $\beta$ er mindre enn, lik, og større enn 1, og undersøke hvordan dette påvirker resultatene.
+
+## 2.1 Presentasjon av teoretisk modell
+
+Vi vil her ta utgangspunkt i en mikroøkonomisk tilnærming for å analyserere hvordan forurensningsnivået og forbrukerens nytte påvirkes av beslutninger som gjøres om konsum, miljøinnsats og inntekt.
+Utledningen er basert på en artikkel av Andreoni og Levinson [@andreoni2001a]
+
+Vi antar at vi har en økonomi som består av en person.
+Dette er en forenkling, men sikrer oss at det ikke er noen eksterne virkninger.
+Vi antar videre at denne personen har nytte av å konsumere ett privat gode , C, og av forurensing P.
+Nyttefunksjonen kan da skrives som:
+
+$$
+U=U(C,P)
+$$ {#eq-nyttefunksjon_gen}
+
+Nytten øker når konsumet $C$ øker, det vil si at $\frac{\partial U}{\partial C}>0$ og avtar når forurensningen $P$ øker, $\frac{\partial U}{\partial P}<0$.
+$U$ er kvasikonkav i $C$ og $-P$.
+Det betyr at hvis vi øker konsumet av goder eller reduserer forurensningen, vil nyttenivåene øke, men på en gradvis avtagende måte.
+
+Vi antar at videre at forurensing er forårsaket av konsumet og at vår person har mulighet til å gjøre noe med det enten ved å rydde opp eller ved å la være å forurense.
+Denne muligheten(miljøinnsatsen) kaller vi $E$.
+Forurensing $P$ er da en positiv funksjon av konsum $C$ og en negativ funksjon av miljøinnsatsen $E$.
+
+$$P=P(C,E)$$ {#eq-forurensning} Forurensningen øker når konsumet $C$ øker, altså at $\frac{\partial P}{\partial C}>0$ og avtar når miljøinnsatsen $E$ øker, noe som innebærer at $\frac{\partial P}{\partial E}<0$.
+
+Vi antar til slutt at en begrenset beholdning av ressurser, $M$, kan brukes på $C$ og $E$.
+Vi kan også se på det som forbrukerens inntekt.
+I vår enkle økonomi er det hverken anledning til å spare eller ta opp lån.
+For å gjøre det enkelt normaliserer vi de relative kostnadene til $C$ og $E$ til 1 slik at ressursbetingelsen blir: $$C+E=M$$ {#eq-ressursbet}
+
+La oss anta at $U=U(C,P)$ har følgende form:
+
+$$U=C-zP$$ {#eq-nyttefunksjon_1_eks}
+
+Nytten i @eq-nyttefunksjon_1_eks er lineær og additiv i $C$ og $P$, og $z$ er den konstante ulempen av forurensning.
+
+Videre antar vi at forurensning $P$ i @eq-forurensning_1_eks er på følgende form: $$P=C-C^\alpha E^\beta $$ {#eq-forurensning_1_eks}
+
+$C$ er brutto forurensning før utslippsreduksjoner og er direkte proposjonal med konsum.
+Den andre faktoren i uttrykket , $C^\alpha E^\beta$ , representerer utslippsreduksjon.
+Den sier for det første at konsum medfører forurensning, men at ressurser brukt på miljøinnsats reduserer denne forurensningen med en standard konkav produktfunksjon.
+Parametrene $\alpha$ og $\beta$ vil bestemme styrken av effekten av henholdsvis konsumet $C$ og miljøinnsatsen $E$ på nivået av forurensning $P$.
+En høyere verdi av $\alpha$ vil gjøre konsumets innvirkning på forurensningsnivået større, mens en høyere verdi av $\beta$ vil gjøre miljøinnsatsens innvirkning større.
+
+Når vi setter @eq-forurensning_1_eks inn i @eq-nyttefunksjon_1_eks får vi:
+
+$$U(C,E)=C-z(C-C^\alpha E^\beta)$$ {#eq-nyttefunksjon_2_eks}
+
+Vi vil her begrense oss til tilfellet der den konstante ulempen av forurensning er lik 1($z=1$).
+Dette reduserer nyttefunksjonen til en standard Cobb-Douglas nyttefunksjon som vi maksimerer under ressursbetingelsen $C+E=M$.
+
+Dette er maksimeringsproblemet:
+
+$$ Maksimer_{C,E} \;\; U(C,E) = C^\alpha E^\beta \;\; gitt\;\; M=C+E$$ {#eq-max}
+
+som gir oss de optimale løsningene ved hjelp av Lagranges metode : $$C^*(M,{\alpha},{\beta})= \frac{\alpha}{\alpha+\beta} M$$ {#eq-sol_C_opt}
+
+$$E^*(M,{\alpha},{\beta})=\frac{\beta}{\alpha+\beta} M$$ {#eq-sol_E_opt}
+
+Vi setter disse inn i @eq-forurensning_1_eks og får den optimale mengde forurensning:
+
+$$ P^*(M)= \frac{\alpha}{\alpha+\beta} M- (\frac{\alpha}{\alpha+\beta})^\alpha (\frac{\beta}{\alpha+\beta})^\beta M^{\alpha+\beta}$$ {#eq-sol_P} )
+
+La oss tolke resultatet:
+
+1.  Vi ser at nivået på forurensningen P(M) øker når ressursbeholdningen(inntekten) M øker.
+
+2.  Uttrykket har to deler.
+    Den første delen, $\frac{\alpha}{\alpha+\beta} M$ uttrykker den lineære økningen i forurensningsnivået med økende inntekt(M), mens den andre delen er den ikke-lineære effekten av fordeling av ressurser mellom konsum og miljøinnsats.
+    Dette er en del som virker reduserende på den lineære økningen i forurensningsnivået.
+
+3.  $\alpha$ og $\beta$ vil spille en sentral rolle.
+    Både summen av dem, nivået på dem, og forskjellen mellom dem.
+    Dette vil reflekteres spesielt i andre del av uttrykket.
+
+For vårt formål er vi mest interessert i hva som skjer med miljøinnsatsen E når M øker.
+La oss derfor se nærmere på @eq-sol_E_opt: $$E^*(M,{\alpha},{\beta})=\frac{\beta}{\alpha+\beta} M$$ Vi ser at dette utrykker at miljøinnsatsen $E$ er avhengig av inntekten $M$ og parameterne $\alpha$ og $\beta$.
+
+Fra utledningen av maksimeringsproblemet har vi at marginal substitusjonsbrøk(MSB) = $\frac{\alpha E}{\beta C}$.
+Dette utrykket er helningen til indifferenskurvene i C/E planet som angir ulike nyttenivå.
+Tangeringspunktet mellom budsjettlinjen og MSB angir tilpasningen for C og E for en gitt inntekt.
+Den optimale kombinasjonen mellom miljøinnsats og konsum vil være gitt ved å sette inn de optimale løsningene for E og C inn i MSB.
+Når inntekten øker, vil tilpasningen være på et høyere nyttenivå i C/E planet.
+Samlingen av alle disse tilpasningspunktene kan vi utrykke i funksjonen som er gitt i ligning 9 og som vil være substitumalen for gitte verdier av $\alpha$ og $\beta$ når inntekten øker.
+Dette kan illustreres på følgende måte.
+
+![](Forholdet%20mellom%20E%20og%20inntekt_1.png) Figuren viser en skisse av to situasjoner med ulike verdier av $\alpha$ og $\beta$ og hvordan dette påvirker miljøinnsatsen E.
+
+I den venstre delen av figuren har vi de to bestanddelene i nyttefunksjonen vår C og E på henholdsvis horisontal og vertikal akse.
+Budsjettlinjer for ulike nivåer av inntekt er representert ved $M_1$,$M_2$ og $M_3$ .
+Det er tegnet inn indifferenskurver for nyttenivåene $U_1$,$U_2$ og $U_3$ der $\alpha$ + $\beta$ \<1 og $\alpha$ \>$\beta$.
+Disse er blå og vi kaller dette tilfelle 1.
+
+Tilfelle 2 i svart er vist ved $U'_1$,$U'_2$ og $U'_3$ der $\alpha$ + $\beta$ \>1 og $\alpha$ \< $\beta$.
+Den optimale kombinasjonen av C og E vil være der budsjettlinjen tangerer indifferenskurven.
+Vi ser at dette gir for tilfelle 1 (striplete linjer) tilpasningene ($C^*_1$, $E^*_1$), ($C^*_2$, $E^*_2$), ($C^*_3$, $E^*_3$).
+Tilsvarende for tilfelle 2 blir ($C'_1$, $E'_1$), ($C'_2$, $E'_2$), ($C'_3$ , $E'_3$) som er tegnet i helsvarte linjer.
+Vi ser av dette at når inntekten øker, vil konsumet i tilfelle 1 øke mer enn miljøinnsatsen, mens i tilfelle 2 vil miljøinnsatsen øke mer enn konsumet.
+
+I den høyre del av figuren er alle tilpasningene overført til et (M, E)-plan som angir hvordan forløpet av E(M) vil være ved ulike verdier av $\alpha$ og $\beta$.
+Den blå linjen er for tilfelle 1 og den organsje for tilfelle 2.
+Hvis vi holder parameteren $\alpha$ konstant og øker parameteren $\beta$, som begge er eksponenter i funksjonen for forurensningsnivået $P=C-C^\alpha E^\beta$, vil dette ha følgende konsekvenser:
+
+-   Effekten av miljøinnsatsen $E$ vil øke:
+
+    Parameteret $\beta$ bestemmer styrken av miljøinnsatsens effekt på forurensningsnivået.
+    Ved å øke $\beta$ vil en økning i miljøinnsatsen ha en større negativ innvirkning på forurensningsnivået.
+    Dette betyr at en større økning i miljøinnsatsen vil føre til en proporsjonalt større reduksjon i forurensningsnivået.
+
+-   Større vektlegging av miljøhensyn:
+
+    Med økende $\beta$ vil miljøinnsatsen få en større betydning for forurensningsnivået sammenlignet med konsumet.
+    Dette kan føre til en sterkere oppfordring til å investere i miljøvennlige tiltak for å redusere forurensningen.
+
+-   Mindre påvirkning fra konsumet:
+
+    Parameteret $\alpha$ er fortsatt konstant, så påvirkingen av konsumet $C$ på forurensningsnivået forblir uendret.
+    Imidlertid, med økende $\beta$, vil den relative betydningen av konsumet i forhold til miljøinnsatsen reduseres, siden miljøinnsatsen får en større vekt.
+    Forurensningsnivået vil falle raskere med økende miljøinnsats: Den økte effekten av miljøinnsatsen vil føre til en raskere reduksjon i forurensningsnivået når $\beta$ øker.
+    Dette kan ha positive miljømessige konsekvenser ved å oppmuntre til større investeringer i miljøvennlige teknologier og praksiser.
+
+Dette innebærer at vi har identifisert preferansene til en miljøinteressert forbruker.
+De vil generelt sett innebære en preferanse for miljøvennlige produkter og tjenester, samt en preferanse for å redusere forbruket av ressurser som bidrar til forurensning.
+
+I appendikset viser vi hvordan forholdet mellom inntekt og forurensning er avhengig av summen av $\alpha$ og $\beta$.
+
+## 2.2 Gjennomgang av empirisk forskning på området
+
+Vi vil i det følgende presentere forskning som er gjort på dette området.
+Først tar vi opp undersøkelser på BNP-nivå for deretter å vise undersøkelser gjort med husholdsinntekt.
+
+**Makronivå**
+
+McConnell sier at det er tre krefter som kan bidra til formen på EKC [@mcconell1997].
+For det første kan det være sannsynlig at forurensningen reduseres når inntekten øker fordi etterspørselsmønsteret endrer seg.
+Med økende inntekt vil etterspørselen til husholdningene rette seg mer mot tjenester og dermed forurense mindre.
+For det andre vil handel kunne bidra gjennom større import av varer av forurensende produksjon.
+På den måten vil importlandet slippe forurensingen.
+Forfatterenes tredje poeng er at når inntektene øker, vil husholdningene etterspørre mer miljøkvalitet og forvente at myndighetene gjennom lov- og regelverk legger til rette for dette.
+
+Resonnementet utdypes hos Andreoni [@andreoni2001b] som sier i sin artikkel at det kan være flere forklaringer på den omvendte U-formen på EKC.
+For det første kan dette uttrykke en naturlig økonomisk utvikling med overgang fra et agarsamfunn til industriell produksjon og videre til mer miljøvennlig service- og tjenesteproduksjon.
+Dette kan være forårsaket av at miljøfiendlig produksjon flyttes til fattige utviklingsland.
+Hvis det er dette som gir den fallende del av kurven, vil ikke EKC kunne være forklaringsmodell for alle land fordi de fattigste vil ikke ha noen land å eksportere sin forurensende produksjon.
+En annen forklaring er at forurensning kan sees på som en negativ eksternalitet ved produksjon.
+For å tvinge fram endring i retning av reduksjon av forurensning, trengs det sterke institusjoner og lovverk.
+Dette finner vi oftest og mer i industrialiserte rike land.
+
+Roca peker på at det er to hovedretninger i forklaringene av hvorfor forholdet mellom miljøkvalitet og inntekt framstår som en omvendt U-kurve [@roca2003].
+Den første foreslår at det er en endogen endring i etterspørselen etter varer og tjenester.
+Endringen består i dreining av etterspørselen mot varer og tjenester med lite miljøavtrykk, med tilsvarende endring over tid i strukturen i næringslivet.
+Samtidig er det viktig å analysere hva dette egentlig innebærer.
+Hvis et land importerer varer som er miljøvennlig i bruk, men som er produsert på en lite bærekraftig måte, er jo bare miljøutfordringene eksportert.
+Et eksempel her er økningen i antall elektriske biler som i seg selv er miljøvennlig tiltak, men der produksjonen av batteriene til bilene foregår på en meget forurensende måte.
+Den andre retningen har også individuelle preferanser og relativ etterspørsel etter varer og tjenester som basis.
+Men her skilles det mellom etterspørsel etter ordinære varer og tjenester og miljøkvalitet.
+Det antas at det er høy inntektselastisitet i etterspørselen etter miljøkvalitet og at det er dette som gjør at økonomisk vekst kan vedvare samtidig som presset mot miljøet avtar.
+
+Det er også verdt å merke seg at økende verdenshandel har medført at miljøfiendtlig produksjon blir flyttet fra høyinntektsland med strenge miljøreguleringer til utviklingsland med mindre vektlegging på miljøkonsekvenser.
+Dette kan også være et bidrag til at forurensning er avtakende i høyt industrialiserte land.
+Dette er kalt "Polution Haven Hypotesis" (PHH).
+[@dinda2004a], s.437.
+
+EKC modellen har siden den gang vært anvendt på BNP per cap mot en rekke miljøvariabler med variabelt resultat, og mange av undersøkelsene har konkludert med at en slik sammenheng kan observeres.
+
+Alle disse undersøkelsene tar utgangspunkt i økonomisk utvikling i land, men det er også mange undersøkelser som ser på husholdsøkonomi og miljøeffekter.
+Da endres spørsmålet til om det er en sammenheng mellom enkeltmenneskenes økonomi og hvordan de forholder seg til miljøutfordringer.
+Med andre ord, vil preferansene hos enkeltmenneskene endre seg når inntekten endres?
+
+**Mikronivå**
+
+Kahn [@kahn1998] gjennomgikk i sin undersøkelse forholdet mellom inntekt og utslipp av hydrokarboner fra biler på husholdningsnivå.
+Bilparken i lavinntektshusholdninger vil ofte omfatte relativt gamle biler som er dårlig vedlikeholdt med stort utslipp av klimagasser.
+I husholdninger med høyere inntekter vil bilene være nyere med teknologi som gir lavere utslipp.
+Det vil kanskje også være flere biler i slike husholdninger.
+Resultatene viste at forholdet kan beskrives ved en omvendt U-formet kurve, også kalt Miljø-Kuznets-kurve.
+
+Karpinska [@karpinska2022a] undersøkte om utslipp av klimagasser som følge av energibruk endres med inntekten i polske husholdninger.
+De fant at EKC er godt dekkende for dette forholdet.
+For lave inntekter vil underforbruk av strøm og gass (fordi det er dyrt) og mer bruk av kull og ved gi høye utslipp.
+Med økende inntekt vil bruken av energikilder med lave klimagassutslipp øke, og boligene vil også være bedre isolert.
+
+Giovanis [@giovanis2013] bruker paneldata fra the Britsh Household Survey fra 1991-2009 og ser på forholdet mellom tre mål på luftkvalitet (Oson, Svoveldioksyd, NOX) og person- og husholdsinntekt.
+De bruker flere ulike statistiske tilnærminger, men hovedkonklusjonen er at EKC-teorien holder.
+
+Alle disse analysene er i tråd med EKC og tilsier at med økende inntekt vil forurensingen avta etter et visst inntektsnivå.
+
+Til slutt vil vi trekke fram en annen innfallsvinkel fra Nauges [@nauges2021].
+Hypotesen hans er at husholdninger i rike land er mindre bekymret for klimaendringer fordi rikdom skaper en buffer mot konsekvensene av endringene.
+Utvalget er en husholdningsundersøkelse som omfattet 11 OECD-land og over 10 000 husholdninger.
+De finner et statistisk signifikant negativt forhold mellom land- og husholdningsrikdom og individers oppfatning av alvoret i klimaendringer.
+
+# 3 Data og metode
+
+I dette kapitlet skal vi gå gjennom data og metoden som ligger til grunn for å gjøre vår analyse av forholdet mellom inntekt og holdninger til miljøtiltak.
+Først gir vi en detaljert beskrivelse av variablene vi har valgt i modellene, og forventet innflytelse på den avhengige variablen.
+Så viser vi noe av datamaterialet som illustrasjoner.
+Til slutt introduserer vi regresjonsmodellene som vi skal anvende for undersøkelsen på hvordan ulike faktorer påvirker individets miljøholdninger.
+
+## 3.1 Variabler
+
+Vi bruker datasett fra Norsk medborgerpanel runde 26, 2023.
+Denne undersøkelsen gjennomføres årlig av Universitetet i Bergen[@ivarsflatenelisabethetal.a] og undersøker holdninger og holdningsendringer i den norske befolkningen knyttet til viktige samfunnsspørsmål.
+Deltakerne blir plukket ut tilfeldig fra Folkeregistret og spurt om de vil delta på en internettbasert undersøkelse.
+Datasettet består brutto av 12 021 observasjoner fordelt på 440 variabler.
+Vi har fått tilgang til data via søknad.
+Vårt datasett består av 1 921 observasjoner når vi har valgt variabler og tatt bort alle observasjoner som ikke hadde svart eller ikke blitt spurt.
+Vi har så gjort om bakgrunnsvariablene om til kategorier.
+
+Den sterke reduksjonen i antall observasjoner er i første rekke knyttet til at ikke alle respondentene er blitt spurt om alle spørsmålene i undersøkelsen, og dette rammer våre variabler i relativt stort omfang.
+Vi har sjekket hvorvidt dette går ut over representativiteten, spesielt knyttet til inntekt, men finner ingen vesentlige forskjeller i inntektsfordelingen i datasettet som helhet og vårt utvalg.
+
+Vi har valgt å kalle vår avhengige variabel "Miljøholdning".
+
+I undersøkelsen presenteres denne på følgende måte:
+
+Hvor viktig mener du følgende hensyn bør være når man velger tiltak for å redusere klimagassutslipp: Tiltaket gir utslippskutt i Norge.
+
+Det følger også med en forklarende tekst:
+
+*En rekke tiltak er aktuelle for å redusere klimagassutslipp. Når norske politikere skal velge mellom ulike tiltak er det flere hensyn som må tas. Hvor viktig mener du at følgende hensyn bør være når man skal bestemme hvilke tiltak som skal innføres?: Tiltaket gir utslippskutt i Norge*
+
+Det spørres altså her om hvor viktig man synes det er at tiltakene gir utslippskutt i Norge.
+En høy score vil være uttrykk for høyere miljøbevissthet enn en lav.
+Det vil også gi uttrykk for at man er villig til å endre sin adferd hvis det er nødvendig.
+Skalaen angir hvor viktig individet mener det er at tiltak for å redusere klimagassutslipp gir utslippskutt i Norge.
+Skalaen er fra 0 til 10 hvor 0 indikerer at det ikke er viktig i det hele tatt, mens 10 indikerer at dette er svært viktig.
+
+De uavhengige variablene vi har valgt er:
+
+**Inntekt:**
+
+Denne variabelen er vår sentrale uavhengige variabel som er basert på vårt teoretiske grunnlag, Miljøkuznet-kurven.
+Den omfatter individets bruttoinntekt og den er definert i 8 kategorier fra "Under 150 000" til "mer enn 1 000 000".
+
+Inntekten er basert på brutto årsinntekt(inntekt før skatt) for individet og ikke husholdningen da spørsmålet spesifikt er: "Hva er inntekten din for tiden? Brutto årsinntekt er:".
+Vi har valgt å slå sammen flere av kategoriene, de to laveste har vi valgt å slå sammen til 0-300 000 da denne vil dekke lavinntekstkategorien som er 60 prosent under medianinntekten i Norge som pr 2022 er på 441 400 [@statistisksentralbyrå].
+For forenkling av analysen har vi slått sammen 300 til 400 tusen kategorien med 400 til 500 kategorien for å få et større utvalg, samt 500 - 600 tusen med 600 - 700 tusen kategorien for også å få et større utvalg samt at gjennomsnittsinntekten i Norge ligger i dette intervallet.
+
+Vi forventer at denne variabelen vil ha en positiv virkning på vår avhengige variabel.
+
+**Utdanning:**
+
+Vi vil også se på om resultatene endrer seg hvis vi legger til en utdanningsvariabel i regresjonen som kontrollvariabel.
+Vi har delt variabelen "høyeste fullførte utdanning" i tre kategorier : grunnskole, videregående skole og høyere utdanning.
+Vi forventer at verdien på den avhengige variablen er økende med økt utdanningsnivå fordi økt kunnskapsnivå har en positiv effekt på forståelse av miljøutfordringene.
+Dette er i tråd med funnene til Meyer[@meyer2015].
+
+**Kjønn:**
+
+Vi har tatt med kontrollvariablen kjønn for å se om det er forskjeller mellom kvinner og menn.
+Vi har to kjønn i datasettet.
+Dette lager vi til en dummyvariabel hvor vi setter verdien kvinne = 0 og mann = 1.
+Vi ønsker å se om det er signifikante forskjeller mellom kjønnene i holdningene, og i vår regresjon tar vi utgangpunkt i kvinnen for å se om det er en endring/forskjell når det er en mann.
+I regresjonen kaller vi denne dummyvariabelen "kjonn".
+
+**Aldersgruppe:**
+
+Denne kontrollvariabelen har vi med for å se om det er forskjell mellom generasjonene.
+Aldersvariablen er delt i tre grupper: de som er født i 1959 og før, 1960-1989 og fra 1990 og etter.
+
+\newpage
+
+### 3.1.1 Deskriptiv statistikk
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| output: true
+#| label: deskriptiv_statistikk
+
+ # Deskriptiv statistikk for kategoriske variabler
+df <- data2 %>% select(Miljøholdning) %>%
+  mutate(
+    Gjennomsnitt = mean(Miljøholdning),
+    Min = min(Miljøholdning),
+    Max = max(Miljøholdning)
+  )
+
+#viser verdiene og legger de inn i datasettet via ny datasett
+df2 <- data.frame(
+  Kategori = 0:10,
+  Gjennomsnitt = rep("6.52", 11),
+  Min = rep("0", 11),
+  Max = rep("10", 11)
+)
+
+data4 <- data2 %>% select(Miljøholdning)
+data6 <- data2 %>% select(utdanning)
+data7 <- data2 %>% select(inntekter)
+data8 <- data2 %>% select(Kjønn)
+data9 <- data2 %>% select(Aldersgruppe)
+
+# Funksjon for kategoriske variabler
+
+kategori_statistikk1 <- function(data, variable) {
+data %>%
+group_by({{ variable }}) %>%
+summarise(Antall = n(),
+      Prosentandel = n() / nrow(data) * 100) %>%
+rename(Kategori = {{ variable }})}
+
+#lager datasettene de nye verdiene
+utslipp_stat <- kategori_statistikk1(data4,Miljøholdning)
+utdanning_stats <- kategori_statistikk1(data6, utdanning)
+inntekter_stats <- kategori_statistikk1(data7, inntekter)
+kjønn_stats <- kategori_statistikk1(data8, Kjønn)
+alder_stats <- kategori_statistikk1(data9, Aldersgruppe)
+
+
+#lage datasett med ny kolonne med variabelnavn til alle
+custom_values <- c("Utdanning","", "")
+# funksjonen
+
+if(length(custom_values) == nrow(utdanning_stats)) {
+utdanning_stats <- utdanning_stats %>%
+ mutate(Variabel = custom_values)
+} else {stop("Length of custom_values does not match number of rows in the dataset")
+}
+
+##########################################################################################
+
+custom_values1 <- c("Inntekter","", "","","")
+# funksjonen
+if(length(custom_values1) == nrow(inntekter_stats)) {
+  inntekter_stats <- inntekter_stats %>%
+    mutate(Variabel = custom_values1)
+
+} else {
+
+  stop("Length of custom_values does not match number of rows in the dataset")
+
+}
+############################################################################################
+custom_values2 <- c("Kjønn","")
+# funksjonen
+if(length(custom_values2) == nrow(kjønn_stats)) {
+  kjønn_stats <- kjønn_stats %>%
+ mutate(Variabel = custom_values2)
+} else {
+  stop("Length of custom_values does not match number of rows in the dataset")
+}
+###############################################################################################
+custom_values3 <- c("Aldersgruppe","", "")
+# funksjonen
+if(length(custom_values3) == nrow(alder_stats)) {
+  alder_stats <- alder_stats %>%
+    mutate(Variabel = custom_values3)
+} else {
+  stop("Length of custom_values does not match number of rows in the dataset")
+}
+##############################################################################################
+
+custom_values4 <- c("Miljøholdning","", "","", "","", "","", "","","")
+# funksjonen
+if(length(custom_values4) == nrow(utslipp_stat)) {
+  utslipp_stat <- utslipp_stat %>%
+    mutate(Variabel = custom_values4)
+} else {
+  stop("Length of custom_values does not match number of rows in the dataset")
+}
+#############################################################################################
+
+ # Slå sammen datasett basert på kolonnen Kategori
+utslipp_stat <- merge(utslipp_stat, df2, by = "Kategori")
+utslipp_stat$Kategori <- as.factor(utslipp_stat$Kategori)
+
+# Kombinerer alle datasettene i rekkefølge
+combined_stats <- bind_rows(
+  utslipp_stat,
+  inntekter_stats,
+  utdanning_stats,
+  kjønn_stats,
+  alder_stats
+)
+
+combined_stats$Gjennomsnitt[is.na(combined_stats$Gjennomsnitt)] <- ""
+combined_stats$Min[is.na(combined_stats$Min)] <- ""
+combined_stats$Max[is.na(combined_stats$Max)] <- ""
+
+#får kolonnenevnene i rett rekkefølge
+combined_stats <- combined_stats[, c("Variabel", "Kategori", "Antall", "Prosentandel","Gjennomsnitt","Min","Max")]
+
+# Lager tabellen
+kable(combined_stats, caption = "Deskriptiv statistikk", digits = 2, format = "pipe") %>%
+
+  kable_styling(full_width = F, bootstrap_options = c("striped", "hover", "condensed"))
+
+```
+
+```{r}
+#| echo: false
+#| warning: false 
+#| message: false
+#| label: lager_datasett_3
+
+#lager datasettet med det vi kun skal bruke for regresjonen
+data3 <- data2[, c("Kjonn", "utdanning", "inntekter","Aldersgruppe", "Miljøholdning", "tiltak_teknologi_kutt")]
+```
+
+I tabell 1 Deskriptiv statistikk finner vi oversikt over alle variablene og fakta om dem.
+Utvalget vårt er totalt 1921 observasjoner.
+
+## 3.2 Noen grafiske illustrasjoner
+
+Vi vil her visualisere noe av det vi har funnet i datasettet.
+Dette kan gi nyttige bakgrunnsinformasjon for forståelse av analyse og resultater.
+
+### **3.2.1 Inntektsfordeling mellom kjønn**
+
+Det første vi ser på er inntektsfordelingen mellom kjønnene.
+
+```{r}
+#| label: fig-inntekt
+#| fig-cap: Inntekt fordelt på inntektsgruppene i prosent
+#| warning: false
+#| echo: false
+
+# Lager egne data med kjønn
+datainntektkjønn <- data.frame(count(data2, inntekter,kjønn))
+
+# Ordner ny tabell med kjønn
+t1<-pivot_wider(datainntektkjønn,names_from = "kjønn",values_from = "n") %>%
+rename("Menn"="1", "Kvinner"="2")
+t1$Sum = t1$Menn + t1$Kvinner
+t1$Andel_Menn<-round(t1$Menn/t1$Sum *100,1)
+t1$Andel_Kvinner<-round(t1$Kvinner/t1$Sum *100,1)
+
+# Lager format som kan brukes i ggplot
+t1_lang<-pivot_longer(t1,cols =c("Andel_Menn", "Andel_Kvinner"),names_to = "Kjønn", values_to="Prosentandel") %>% 
+  rename("Inntektsgruppe" ="inntekter")
+
+# Plottet
+ggplot(t1_lang, aes(x = Inntektsgruppe, y = Prosentandel, fill=Kjønn)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_text(aes(label = paste0(Prosentandel, "%")),
+            position = position_dodge(width = 0.9), vjust = 1.5, size = 2.5,colour="white") +
+  labs(title= "Inntektsfordeling kjønnsfordelt i andeler",
+      x = "Inntektsgruppe",
+      y = "Prosentandel",
+      fill = "Kjønn") +
+   theme(plot.title=element_text(size=8),
+        axis.title.x =element_text(size=5),
+         axis.title.y =element_text(size=5))+
+  theme_minimal() +
+theme(axis.text.x = element_text(angle = 20,hjust = 1))
+
+
+
+```
+
+Av @fig-inntekt ser vi at kvinner er overrepresentert i den laveste inntektsgruppen, men menn er overrepresentert i de to høyeste.
+For inntekter mellom 300 000 - 700 000 er det lik fordeling mellom kjønnene.
+
+### 3.2.2 Forholdet mellom kjønn og utdanning 
+
+Vi har også sett på hvordan utdanningsnivået er fordelt mellom kjønnene.
+
+```{r}
+#| label: fig-utdanning
+#| fig-cap: Utdanning fordelt på kjønn i prosent
+#| warning: false
+#| echo: false
+
+# Lager egne data med kjønn
+datautdkjønn <- data.frame(count(data2, utdanning,kjønn))
+
+# Ordner ny tabell med kjønn
+t2<-pivot_wider(datautdkjønn,names_from = "kjønn",values_from = "n") %>%
+rename("Menn"="1", "Kvinner"="2")
+t2$Sum = t2$Menn + t2$Kvinner
+t2$Andel_Menn<-round(t2$Menn/t2$Sum *100,1)
+t2$Andel_Kvinner<-round(t2$Kvinner/t2$Sum *100,1)
+
+# Lager format som kan brukes i ggplot
+t2_lang<-pivot_longer(t2,cols =c("Andel_Menn", "Andel_Kvinner"),names_to = "Kjønn", values_to="Prosentandel") %>% 
+  rename("Utdanning" ="utdanning")
+
+# Plottet
+ggplot(t2_lang, aes(x = Utdanning, y = Prosentandel, fill=Kjønn)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_text(aes(label = paste0(Prosentandel, "%")),
+            position = position_dodge(width = 0.9), vjust = 1.5, size = 2.5,colour="white") +
+  labs(title= "Utdanning kjønnsfordelt i andeler",
+      x = "Utdanning",
+      y = "Prosentandel",
+      fill = "Kjønn") +
+   theme(plot.title=element_text(size=8),
+        axis.title.x =element_text(size=5),
+         axis.title.y =element_text(size=5))+
+  theme_minimal() +
+theme(axis.text.x = element_text(angle = 20,hjust = 1))
+```
+
+Vi ser av @fig-utdanning at det er store forskjeller mellom kjønnene på de laveste utdanningsnivåene, men for høyere utdanning er et relativt lik fordeling.
+
+## 3.3 Regresjonsmodellene
+
+Vi bruker multippel regresjonanalyse fordi vi i utgangspunktet vurderer det slik at det er flere variabler som påvirker vår avhengige variabel, og vi ønsker å finne ut om det er en statistisk sammenheng mellom våre uavhengige variabler og vår avhengige variabel.
+Vi vil bruke minste kvadraters metode fordi den finner de verdiene av regresjonskoeffisientene som gir oss den minste kvadratsummen av residualene og dermed regresjonsflaten som i gjennomsnitt er nærmest alle de observerte individuelle datapunktene [@mehmetoglu2020].
+
+Minste kvadraters metode bygger på noen forutsetninger som vi vil teste etter hvert.
+Disse er:
+
+1.  Det må være en lineær sammenheng mellom variabler slik at den avhengige variabelen kan uttrykkes som en lineær funksjon av de uavhengige variablene.
+
+2.  Residualene(feiltermene) antas å være normalfordelt.
+    Dette betyr at feilene rundt den lineære tilpasningen bør følge en normalfordeling, noe som gjør det mulig å bruke statistiske metoder for å evaluere modellen.
+
+3.  Variansen til feiltermene er konstant over hele spennet av de uavhengige variablene.
+    Dette kalles homoskedastisitet og betyr at spredningen av feilene antas å være konstant langs x-aksen.
+
+4.  Det antas at det ikke er noen lineær avhengighet mellom de uavhengige variablene.
+    Dette innebærer ingen perfekt multikollinearitet.
+
+Vi vil ta utgangspunkt i et signifikansnivå på 5 %.
+
+Vi vil bruke totalt seks regresjonsmodeller basert på de nevnte uavhengige variablene
+
+Modell 1: $Miljoholdning=\beta_0 + \beta_1inntekter + \epsilon_i\ $
+
+Modell 2: $Miljoholdning=\beta_0 + \beta_1inntekter + \beta_2utdanning + \epsilon_i\ $
+
+Modell 2 undersøker om det er noen interaksjonseffekter mellom inntekter og utdanning.
+Dette vil si at vi ser etter om effekten som inntekt har på miljøholdning er avhengig av nivået på utdanning.
+
+Modell 2a: $Miljoholdning=\beta_0 + \beta_1inntekter + \beta_2utdanning + \beta_1inntekter *\beta_2utdanning + \epsilon_i\ $
+
+Modell 3: $Miljoholdning=\beta_0 + \beta_1inntekter + \beta_2utdanning + \beta_3Kjonn + \epsilon_i\ $
+
+Modell 3a undersøker om det er noen interaksjonseffekter mellom utdanning og kjønn.
+Dette vil si at vi ser etter om effekten som utdanning har på miljøholdning er avhengig av kjønn.
+
+Modell 3a: $Miljoholdning=\beta_0 + \beta_1inntekter + \beta_2utdanning + \beta_3Kjonn + \beta_2utdanning*\beta_3Kjonn + \epsilon_i\ $
+
+Modell 4: $Miljoholdning=\beta_0 + \beta_1inntekter + \beta_2utdanning + \beta_3Kjonn + \beta_4Aldersgruppe + \epsilon_i\ $
+
+Konstantleddet $\beta_0$ angir verdien på den avhengige variablen når alle uavhengige er lik 0.
+Regresjonskoeffisienten $\beta_i$ angir den gjennomsnittlige effekten de uavhengige variabelene har på den avhengige variabelen tiltak_utslippskutt når vi holder verdien på de andre variablene konstant.
+$\epsilon_i$ er et restledd for all annen påvirkning.
+
+# 4 Resultater
+
+Vi vil her vise den empiriske analysen og resultatene vi har kommet fram til.
+Vi vil gjennomgå en regresjonsmodell med flere variabler.
+Det er også gjennomfør ulike tester for å vurdere den mest omfattende modellen.
+Vår null-hypotese til modellen er at det ikke er noen sammenheng mellom inntekt og holdning til tiltak som gir utslippskutt i Norge.
+Den alternative hypotesen blir at det er en sammenheng.
+Signifikansnivået er satt til 5 %.
+Dette betyr at hvis vi finner p-verdier lavere enn 0,05, skal null-hypotesen avvises til fordel for den alternative hypotesen.
+
+Vi vil også gjennomføre analyser der vi legger til utdanningsnivå, kjønn og aldersgruppe som kontrollvariabler for å se om dette vil ha innflytelse på vår avhengige variabel.
+
+## 4.1 Regresjonsmodeller
+
+Den avhengige variabelen er hvor viktig individet mener det er at tiltak for å redusere klimagassutslipp gir utslippskutt i Norge.
+Den har vi kalt "Miljøholdning".
+
+```{r}
+#| echo: false
+#| warning: false 
+#| message: false
+#| output: false
+#| label: modell_1
+
+#lager regresjonsmodell 1
+modell_1 <- lm(Miljøholdning ~ inntekter, data = data3)
+# summerer denne ut
+summary(modell_1)
+```
+
+```{r}
+#| echo: false
+#| warning: false 
+#| message: false
+#| output: false
+#| label: modell_2
+
+#lager regresjonsmodell 2
+modell_2 <- lm(Miljøholdning ~ inntekter + utdanning, data = data3)
+# summerer denne ut
+summary(modell_2)
+```
+
+```{r}
+#| echo: false
+#| warning: false 
+#| message: false
+#| output: false
+#| label: modell_2a
+
+#lager regresjonsmodell 2a
+modell_2a <- lm(Miljøholdning ~ inntekter + utdanning + inntekter*utdanning, data = data3)
+# summerer denne ut
+summary(modell_2a)
+```
+
+```{r}
+#| echo: false
+#| warning: false 
+#| message: false
+#| output: false
+#| label: modell_3
+
+#lager regresjonsmodell 3
+modell_3 <- lm(Miljøholdning ~ inntekter + utdanning + Kjonn, data = data3)
+# summerer denne ut
+summary(modell_3)
+```
+
+```{r}
+#| echo: false
+#| warning: false 
+#| message: false
+#| output: false
+#| label: modell_3a
+
+#lager regresjonsmodell 3a
+modell_3a <- lm(Miljøholdning ~ inntekter + utdanning + Kjonn + utdanning*Kjonn, data = data3)
+# summerer denne ut
+summary(modell_3a)
+```
+
+```{r}
+#| echo: false
+#| warning: false 
+#| message: false
+#| output: false
+#| label: modell_4
+
+#lager regresjonsmodell 4
+modell_4 <- lm(Miljøholdning ~ inntekter + utdanning + Kjonn + Aldersgruppe, data = data3)
+# summerer denne ut
+summary(modell_4)
+```
+
+### 4.2.1 Oversikt over resultatene
+
+For lesbarhetens skyld har vi delt resultatene på to tabeller.
+Den første viser resultatene for modell 1, modell 2 og modell 2a, mens den siste viser modell 3, modell 3a og modell 4.
+
+```{r}
+models1<-list(modell_1, modell_2, modell_2a)
+screenreg(models1,
+          digits = 2,
+          single.row = TRUE,
+          custom.model.names = c("modell_1","modell_2","modell_2a"), 
+          no.space=TRUE)
+```
+
+\newpage
+
+```{r}
+models2<-list(modell_3, modell_3a, modell_4)
+screenreg(models2,
+          digits = 2,
+          single.row = TRUE,
+                  custom.model.names = c("modell_3","modell_3a","modell_4"),
+          no.space=TRUE)
+```
+
+### 4.1.2 Modell 1 med inntekt
+
+Hovedmodellen vår er å se på om det er noen sammenheng mellom inntekt og vår uavhengige variabel.
+
+**Tolkning av resultatet:**
+
+Intercepten representerer konstantleddet i modellen og forteller oss at forventet verdi på holdningsskalaen vil være 6,66 når inntekten er i intervallet 0 - 300 000.
+Estimatene for inntektsgruppene 700 000 - 1 000 000 og Mer enn 1 000 000 faller med henholdsvis 0,52 og 0,58.
+Verdiene er signifikante og innebærer at vi kan med 95 % sikkerhet si at det er en negativ sammenheng mellom inntekt på disse nivåene og miljøholdning.
+
+Adjusted $R^2$ gir oss at variablene i regresjonslikningen i denne modellen forklarer kun 1 prosent av sammenhengen.
+Dette betyr at det er mange andre forhold som er med på å forklare sammenhengen, men som ikke er med i analysen.
+
+### 4.1.3 Modell 2 med inntekt og utdanning
+
+I denne modellen har vi utvidet vår modell med en utdanningsvariabel på tre nivå, grunnskole, videregående og høyere utdanning.
+
+**Tolkning av modellen:**
+
+Intercepten er konstantleddet i regresjonsmodellen vår og sier at den forventede verdien på holdningsskalaen er 6.37 når inntekten er under 300 000 og utdanningsnivået er grunnskole.
+For inntekter over 700 000 til 1 mill reduseres den forventede verdien på holdningsskalaen med 0,8 poeng til 5,57.
+P-verdien er 0 og dermed er denne sammenhengen signifikant.
+Dette innebærer at det er en negativ sammenheng mellom inntekt og miljøholdning med grunnskoleutdanning for denne inntektsgruppen.
+Hvis inntekten er over 1 mill reduseres verdien med 0.9 til 5,47 .
+Dette resultatet er også signifikant og angir en negativ sammenheng.
+Vi finner altså at med lavt utdanningsnivå er miljøholdningen fallende når inntekten er over 700 000.
+Hvis utdanningsnivået er høyere utdanning, vil estimatet øke med 0,72 for hver av inntektsgruppene.
+Dette resultatet er signifikant, men selv med høy utdanning i de høyeste inntektsgruppene er estimatet fortsatt negativt, men i mye mindre grad.
+Vårt funn er derfor at høy utdanning kan ha en dempende virkning på effekten av økende inntekt.
+
+Oppsummert gir dette oss at vi finner en negativ sammenheng mellom inntekt og miljøholdninger for inntekter over 700 000 når vi kontrollerer for effekten av utdanning.
+Utdanning ser ut til å ha en dempende virkning på den negative sammenhengen.
+
+Adjusted $R^2$ forteller oss at variablene i regresjonslikningen i modell 2 forklarer 2 prosent av sammenhengen.
+Dette betyr at det fremdeles er mange andre forhold som er med på å forklare sammenhengen, men som ikke er med i analysen.
+
+### 4.1.4 Modell 2a med inntekt, utdanning og interaksjon mellom inntekt og utdanning
+
+Her tester vi om effekten som inntekt har på miljøholdning er avhengig av nivået på utdanning.
+Av resultatene for denne modellen ser vi at konstantleddet(intercepten) gir oss en forventet verdi på holdningsskalaen på 5,92 når inntekten er under 300 000 og utdanningsnivået er grunnskole.
+Denne er signifikant.
+Det er ingen andre signifikante resultater i denne modellen og finner heller ingen sigifikant interaksjonseffekt.
+
+### 4.1.5 Modell 3 med inntekt, utdanning og kjønn
+
+Vi utvider modellen til også å omfatte kjønn for å se på om det er forskjeller mellom kvinner og menn.
+
+**Tolkning av resultatene**
+
+Av resultatene for denne regresjonsmodellen modellen ser vi at konstantleddet(intercepten) gir oss en forventet verdi på holdningsskalaen på 6.86 for kvinner når inntekten er under 300 000 og utdanningsnivået er grunnskole.
+Denne er signifikant For menn reduseres estimatet med 1,01 på holdningsskalaen.
+Dette resultatet er signifikant.
+
+Vi ser at adjusted $R^2$ nå har økt til 5 %.
+Dette betyr at den nye variabelen i regresjonslikningen i modell 3 har forklaringskraft, men det er fremdeles mange andre forhold som er med på å forklare sammenhengen, men som ikke er med i analysen.
+
+### 4.1.6 Modell 3a med inntekt, utdanning og kjønn og interaksjon utdanning-kjønn
+
+**Tolkning av modellen:**
+
+Modell 3a omfatter modell 3 og en interaksjonsvariabel mellom kjønn og utdanning.
+Vi ser om effekten som utdanning har på miljøholdning er avhengig av kjønn.
+Av resultatene for denne regresjonsmodellen modellen ser vi at konstantleddet(intercepten) gir oss en forventet verdi på holdningsskalaen på 7,18 for kvinner når inntekten er under 300 000 og utdanningsnivået er grunnskole.
+Denne er signifikant.
+For menn reduseres estimatet med 1,53 på holdningsskalaen.
+Dette resultatet er også signifikant.
+Vi finner ingen sigifikant interaksjonseffekt.
+
+### 4.1.7 Modell 4 med inntekt, utdanning og kjønn og aldersgruppe
+
+**Tolkning av modellen:**
+
+For modell 4 har vi signifikant estimat for miljøholdning på 6,87 på konstantleddet(intercepten).
+Dette omfatter kvinner med inntekten under 300 000 og grunnskole som utdanningsnivå og født før 1960.
+Kjønnsvariablen viser at også her er resultatet for menn vesenlig lavere og signifikant.
+Vi ser aldersgruppen1960-1989 trekker ned holdningsestimatet.
+Dette resultatet er signifikant.
+
+\newpage
+
+# 5 Diskusjon og konklusjon
+
+Vår problemstilling er om det er en sammenheng mellom inntekt og holdninger til klimagasstiltak som gir utslippskutt i Norge.
+
+I våre modeller er den avhengige variablen hvor viktig individet mener det er at tiltak for å redusere klimagassutslipp gir utslippskutt i Norge.
+Vi har kaldt den miljøholdning.
+Våre resultater for modell 1 antyder at for høye inntekter blir scoren for miljøholdning avtakende.
+Dette innebærer at de positive miljøholdningene blir svakere når inntekten er høy.
+Når vi i modell 2 utvider med en utdanning som kontrollvariabel, ser vi at høyere utdanning vil kompensere noe for dette, men at scoren likevel vil gå ned.
+Vår modell 2a har med interaksjon mellom inntekt og utdanning i tillegg.
+Av resultatene ser vi at effekten som inntekt har på miljøholdning ikke er avhengig av nivået på utdanning.
+I vår tredje modell der kjønn er tatt med, ser vi at det er signifikante forskjeller mellom kjønnene, men ikke på inntekt og utdanning.
+Dette kan ha sammenheng med at det er stor forskjell i inntektsfordelingen mellom menn og kvinner i de høyeste inntektsgruppene.
+3a omfatter modell 3 og en interaksjonsvariabel mellom kjønn og utdanning.
+Vi finner at effekten som utdanning har på miljøholdning ikke er avhengig av kjønn.
+Modell 4 omfatter også aldersgruppe.
+Vi finner her at kjønn og aldersgruppe 1960_1989 har signifikant betydning for miljøholdning.
+
+Vi ser at når regresjonen utvides med flere kontrollvariabler, forsvinner de signifikante resultatene vi fant for inntekter over 700 000.
+Dette kan bety at kjønn har større betydning enn inntekt for miljøholdning.
+Det kan også innebære at kjønn og aldersgruppe har større betydning enn inntekt for miljøholdning.
+
+Teorien om EKC sier at når inntekten når et visst punkt, vil forurensningen avta fordi miljøinnsatsen øker[@kahn1998a],[@karpinska2022b], [@giovanis2013a].
+Dette kan for eksempel skyldes at konsumentene endrer forbruksmønster når inntekten øker.
+Vi finner ikke dette i våre resultater fordi den positive miljøholdningen avtar når inntekten går over 700 000.
+
+Hos Nauges[@nauges2021a] gir empiriske funn grunn til å vurdere om det kan være slik at miljøinnsatsen faller etter et visst inntektsnivå fordi det kan være en oppfatning at man kan kjøpe seg ut av konsekvensene av klimaendringene.
+For veldig høye inntekter kan dette gi lavere miljøscore.
+Det kan også være at interessen for miljøutfordringene i Norge er dalende for de rikeste fordi de ikke er så opptatt av eget lands bidrag.
+
+Slik vi vurderer det, er våre funn i modell 1 i tråd med Nauges fordi regresjonen bare omfatter forholdet mellom miljøholdninger(her: miljøinnsatsen) og inntekt.
+Når det gjelder modell 2 vil man kunne anta at utdanning som en kunnskapsleverandør vil kunne gi bidrag til økt miljøforståelse og dermed ha positiv virkning på miljøholdningene.
+
+For vår undersøkelse ser vi noen begrensninger i bruk av EKC- modellen.
+For det første er de fleste forskningsresultatene gjort på makronivå med BNP og land som variabler.
+Det er også gjort noen undersøkelser med husholdsinntekt som uavhengig variabel, men den avhengige variabelen er ofte i konkret form som for eksempel direkte reduksjon av $CO_2$.
+Vi er ikke kjent med undersøkelser der den avhengige variabelen er antatt å være et uttrykk for forurensning.
+For det andre er det store variasjoner i resultatene fra de empiriske undersøkelsene, og det er en pågående diskusjon om hvorvidt vi kan snakke om en stabil sammenheng mellom inntekt og forurensning.\
+Datasettet besto brutto av 12 021 observasjoner.
+Vårt datasett ble til slutt 1 921 observasjoner fordi vi har tatt bort alle observasjoner som ikke hadde svart eller ikke blitt spurt.
+Utvalget ble derfor relativt lite.
+Dette kan føre til at det blir skjevheter i variablene.
+Noen ekstremverdier kan dermed gi store utslag.
+Det kan også oppstå skjevheter som en følge av at respondentene ikke har ønsket å svare på grunn av lav interesse for problemstillingen.
+
+For inntektsvariablen ser vi at for hele datasettet vårt er det noenlunde samme inntektsfordeling som i det store datasettet samlet sett, men det er en stor forskjell mellom kvinner og menn i de to høyeste inntektsgruppene.
+Dette vil påvirke resultatene våre i modell 3.
+Vi viser her til @fig-inntekt som beskriver dette.
+Inntektsvariabelen er ikke kontinuerlig, noe som begrenser analysen.
+Den burde også være relatert til fulltidsarbeid.
+
+Vi ser at det er tildels store forskjeller i utdanningsnivå i det store datasettet og vårt.
+Dette gjelder både mellom kjønn og totalt.
+Dette kan også ha påvirket resultatene.
+
+Det kan stilles spørsmål ved om vi faktisk har målt det vi ønsker å måle.
+Vi ønsket å undersøke om det er en sammenheng mellom inntekt og holdningene til tiltak som reduserer klimagassutslipp, og har teoretisk brukt variabelen miljøinnsats.
+Koblingen er at holdningene kommer til syne i miljøinnsats ved endring i personlig adferd og forbruksmønster som i sin tur påvirker klimagassutslipp og dermed forurensning.
+
+#### Konklusjon
+
+-   Det kan være begrensende at det er inntektsnivået som er en viktig kilde til miljøinnsats .
+    Ulike miljøtiltak med formål om utslippsreduksjon må favne videre slik at alle i samfunnet ser viktigheten av dette uavhengig av inntekt og utdanning.
+
+-   Vi ser at utdanning har stor betydning i vår regresjon.
+    Utdanning betyr kunnskap om hvordan det hele henger sammen.
+    Dette kan bety at tiltak som legger vekt å gi ny kunnskap er en viktig kilde til å øke miljøfokus.
+
+-   Det kan derfor se ut som at det viktigste vil være å utforme tiltak som appellerer til at det er en felles framtid uavhengig av inntekt og kjønn osv og at hvis det skal være en framtid må alle bidra.
+
+\newpage
+
+# Appendiks
+
+## 1 Test av forutsetningene for metoden
+
+Vi vil her gå gjennom noen tester for å se om forutsetningene for å bruke OLS er oppfylt og viser her til 3.2 der disse gjennomgås.
+Testene er bare utført for den enkleste modellen(modell1).
+Mer
+
+### 2.1 Lineær sammenheng mellom variablene
+
+Denne testen tar for seg forutsetningen om lineær sammenheng og dette plottet tar viser hvorvidt residualene har ikke-lineære mønstre.
+
+```{r}
+plot(modell_4, which = 1, main = "Model_4")
+```
+
+Vi ser at verdiene er jevnt fordelt rundt den horisontale linjen og kan konkludere med at forutsetningen er oppfylt.
+
+### 1.2 Normalfordelte residualer(feiltermer)
+
+Vi sjekker her om residualene er normalfordelt.
+Hvis dette er tilfelle, vil de følge en rett linje uten store avvik.
+
+```{r}
+plot(modell_4, which = 2, main = "Model_4")
+```
+
+Vi ser av figuren at residualene ligger under den ideelle linjen for lave og høye verdier.
+Konklusjon er at residualene er ganske normalfordelte.
+
+### 1.3 Konstant varians hos feiltermene(homoskedastisitet).
+
+Dette plottet viser om variansen til residualene er konstant.
+
+```{r}
+plot(modell_4, which = 3, main = "Model_4")
+```
+
+Vi ser at spredningen er noenlunde jevn rundt linjen og kan konkludere med at variansen hos feiltermene er noenlunde konstant.
+
+### 1.4 Kolinearitet
+
+Denne testen sjekker om det er noen lineær sammenheng mellom to variabler.
+
+```{r}
+vif(modell_4)
+```
+
+Vi ser at VI-verdiene er i nærheten av 1 alle sammen noe som indikerer at det ikke er noen lineært forhold mellom variablene.
+
+### 2.5 Ekstremverdier
+
+Dette plottet viser om noen av verdiene er ekstremverdier som kan påvirke regresjonen
+
+```{r}
+plot(modell_4, which = 5, main = "Model_4")
+```
+
+Vi ser at vi har noen utliggere på inntekt som kan påvirke resultatene.
+
+Samlet vil vi konkludere med at testene viser at forutsetningene for OLS er oppfylt.
+
+## 2 Mer om Environmental Kuznets Curve(EKC)
+
+Her viser vi hvordan forholdet mellom inntekt og forurensning er avhengig av summen av $\alpha$ og $\beta$.
+
+Den deriverte av @eq-sol_P angir stigningstallet til $P(M)$: $$ \frac{\partial P^*}{\partial M} = \frac{\alpha}{\alpha+\beta} -(\alpha+\beta) (\frac{\alpha}{\alpha+\beta})^\alpha (\frac{\beta}{\alpha+\beta})^\beta M^{\alpha+\beta-1}$$ {#eq-sol_P_1-derivert}
+
+Det er verdien på summen av $\alpha$ og $\beta$ som avgjør hvorvidt kurven er stigende eller fallende.
+La oss se nærmere på dette:
+
+-   Hvis $\alpha+\beta = 1$ vil tiltak mot forurensning ha konstant skalavirkning og $\frac{\partial P^*}{\partial M}$ vil være konstant.
+
+-   Hvis $0 \leq \alpha$ og $\beta \leq 1$ vil forurensingsnivået $P^*$ øke proposjonalt med M.
+
+-   Hvis $\alpha+\beta \neq1$ kan vi se nærmere på den andrederiverte til @eq-sol_P_1-derivert for å finne ut om vi har et toppunkt eller bunnpunkt: $$ \frac{\partial^2 P^*}{\partial M^2} =-(\alpha+\beta-1)(\alpha+\beta) (\frac{\alpha}{\alpha+\beta})^\alpha (\frac{\beta}{\alpha+\beta})^\beta M^{\alpha+\beta-2}$$ {#eq-sol_P_2-derivert}
+
+Hvis fortegnet til den andrederiverte er positivt, vil kurven være konveks og negativt vil gi konkav kurve.
+
+-   Hvis $\alpha+\beta < 1$ vil dette gi positivt fortegn og tiltak mot forurensning ha avtakende skalavirkning.
+    $P^*(M)$ vil være konveks.
+
+-   Hvis $\alpha+\beta > 1$ vil dette gi positivt fortegn og tiltak mot forurensning ha økende skalavirkning.
+    $P^*(M)$ vil være konkav.
+    Det er denne kurven som blir omtalt som miljø-Kuznets kurven(EKC).
+
+Figuren viser en illustrasjon av de tre tilfellene.
+Tilfelle (iii) er EKC.
+
+```{r}
+#| echo: false
+#| warning: false 
+#| message: false
+#| fig-width: 6
+#| fig-height: 3
+#| label: fig-kuznet
+#| fig-cap: "Kurveforløp for ulike verdier av alfa og beta"
+
+
+library(gridExtra)
+
+df <- data.frame(x=c(-10,10))
+eq1 = function(x){0.5*x}
+eq2 = function(x){x^2+0.0001*x+100}
+eq3 = function(x){-x^2+0.0001*x+100}
+
+Plot<-ggplot(data=df, aes(x=x)) + 
+  theme_classic() +
+  labs(x ="M", y="P")+
+  theme(axis.text.x = element_blank(), # fjerne notasjon på aksene
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.title.y = element_text(angle = 360, hjust = 1))
+
+Rett_linje<- Plot +
+  stat_function(fun=eq1, col="blue")+
+  labs(title = "\u03b1 + \u03b2 = 1", x ="M \n(i)", y="P")
+
+Konveks<-Plot + 
+  stat_function(fun=eq2, col="blue")+
+  labs(title = "\u03b1 + \u03b2 < 1", x ="M \n(ii)", y="P")
+
+Konkav<-Plot + 
+  stat_function(fun=eq3, col="blue")+
+  labs(title = "\u03b1 + \u03b2 > 1", x ="M \n(iii)", y="P")
+
+grid.arrange(Rett_linje, Konveks, Konkav, ncol=3)
+```
+
+## 3 Variabelliste
+
+Dette er en oversikt over de variablene vi har brukt i modellene og kode de har i det opprinnelige datasettet:
+
+-   Miljøholdning = r26k2_cemes_e
+
+-   Inntekt = r26k2_bginc
+
+-   Utdanning = r26P4_1
+
+-   Kjønn =r26P1
+
+-   Fødselsår = r26P5_2
+
+# 7 Referanser
